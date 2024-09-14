@@ -10,6 +10,12 @@ python = "^3.10"
 django = "^5.1"
 selenium = "^4.24.0"
 webdriver-manager = "^4.0.2"
+psycopg2-binary = "^2.9.9"
+sqlalchemy = "^2.0.34"
+psycopg2 = "^2.9.9"
+alembic = "^1.13.2"
+pandas = "^2.2.2"
+tqdm = "^4.66.5"
 
 
 [build-system]
