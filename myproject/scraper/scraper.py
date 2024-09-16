@@ -4,7 +4,6 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 import os
 
-
 def fetch_schedule_table(url):
     geckodriver_path = '/snap/bin/geckodriver'
 
