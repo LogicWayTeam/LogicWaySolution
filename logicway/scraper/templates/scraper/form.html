@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tram Schedule Form</title>
+</head>
+<body>
+    <h1>Enter Tram Information</h1>
+    <form method="post" action="{% url 'scraper:tram_schedule_v1' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
