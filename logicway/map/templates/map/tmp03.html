@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaflet Routing with OSRM</title>
+
+    <!-- Подключаем стили Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <!-- Подключаем скрипт Leaflet -->
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <!-- Подключаем скрипт Leaflet Routing Machine для маршрутов -->
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+<!-- Контейнер для карты -->
+<div id="map" style="height: 500px;"></div>
+
+<script>
+    // Инициализация карты
+    var map = L.map('map').setView([51.505, -0.09], 13);
+
+    // Добавляем базовый слой карты OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Функция для создания маршрута с разными видами транспорта
+    function createRoute(transportMode) {
+        L.Routing.control({
+            waypoints: [
+                L.latLng(51.505, -0.09),  // Стартовая точка
+                L.latLng(51.515, -0.1)   // Конечная точка
+            ],
+            router: L.Routing.osrmv1({
+                serviceUrl: 'https://router.project-osrm.org/route/v1/' + transportMode // Выбор транспорта
+            }),
+            lineOptions: {
+                styles: [{ color: 'blue', weight: 4 }] // Стили для линии маршрута
+            },
+            createMarker: function() { return null; } // Отключаем маркеры на маршруте
+        }).addTo(map);
+    }
+
+    // Пример: создание маршрута на машине, пешком и на велосипеде
+    createRoute('bike');   // На машине
+    // Для пеших маршрутов: createRoute('foot');
+    // Для велосипедных маршрутов: createRoute('bike');
+</script>
+</body>
+</html>

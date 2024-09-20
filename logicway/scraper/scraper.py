@@ -2,23 +2,22 @@ from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-import os
+
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service
+# from webdriver_manager.firefox import GeckoDriverManager
+# from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 def fetch_schedule_table(url):
-    geckodriver_path = '/snap/bin/geckodriver'
-
-    if not os.path.isfile(geckodriver_path):
-        raise FileNotFoundError(f"geckodriver не найден по пути {geckodriver_path}")
-
     options = Options()
     options.headless = True
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-gpu")
     options.add_argument("--disable-dev-shm-usage")
 
-    service = Service(geckodriver_path)
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service)
 
-    driver = webdriver.Firefox(service=service, options=options)
     try:
         driver.get(url)
 

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта Познани с отображением адреса при клике</title>
+
+    <!-- Подключаем стили Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+        #address {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Карта Познани с отображением адреса при клике</h1>
+
+<!-- Карта -->
+<div id="map"></div>
+<!-- Отображение адреса -->
+<div id="address"><strong>Адрес:</strong> <span id="clickedAddress">Нажмите на карту</span></div>
+
+<!-- Подключаем JavaScript Leaflet -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+<script>
+    // Инициализация карты и центрирование на Познани
+    var map = L.map('map').setView([52.406376, 16.925167], 13);
+
+    // Добавляем слой OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Функция для обратного геокодирования через Nominatim API
+    function reverseGeocode(lat, lon, callback) {
+        var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    callback(data.display_name);
+                } else {
+                    callback("Адрес не найден");
+                }
+            })
+            .catch(error => {
+                console.error("Ошибка при обратном геокодировании:", error);
+                callback("Ошибка при получении адреса");
+            });
+    }
+
+    // Обработка клика на карту
+    map.on('click', function(e) {
+        var lat = e.latlng.lat;
+        var lon = e.latlng.lng;
+
+        // Выполняем обратное геокодирование по координатам
+        reverseGeocode(lat, lon, function(address) {
+            document.getElementById('clickedAddress').textContent = address;
+        });
+    });
+</script>
+</body>
+</html>
