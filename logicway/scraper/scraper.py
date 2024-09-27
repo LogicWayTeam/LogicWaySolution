@@ -8,6 +8,7 @@ from selenium.webdriver.chrome.service import Service
 # from webdriver_manager.firefox import GeckoDriverManager
 # from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
+
 def fetch_schedule_table(url):
     options = Options()
     options.headless = True

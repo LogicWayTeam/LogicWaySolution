@@ -1,3 +1,7 @@
+### Poetry Setting
+
+https://www.jetbrains.com/help/pycharm/poetry.html
+
 ### Create the PostgreSQL Database
 
 To set up your PostgreSQL database:

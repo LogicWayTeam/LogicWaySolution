@@ -15,8 +15,10 @@ db_port = os.getenv('DB_PORT')
 
 engine = create_engine(f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}")
 
+
 def fetch_and_convert_to_json():
     with Session(engine) as session:
+        # TODO : SQL dialect is not configured
         query = text("SELECT stop_id, stop_name, stop_lat, stop_lon, zone_id, stop_code FROM stops;")
         result = session.execute(query)
 
