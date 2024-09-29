@@ -3,7 +3,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
-# Модель для таблицы Agency
+
 class Agency(Base):
     __tablename__ = 'agency'
     agency_id = Column(String, primary_key=True)
@@ -13,7 +13,7 @@ class Agency(Base):
     agency_phone = Column(String)
     agency_lang = Column(String)
 
-# Модель для таблицы Calendar
+
 class Calendar(Base):
     __tablename__ = 'calendar'
     service_id = Column(String, primary_key=True)
@@ -27,6 +27,7 @@ class Calendar(Base):
     start_date = Column(Date)
     end_date = Column(Date)
 
+
 class Routes(Base):
     __tablename__ = 'routes'
     route_id = Column(String, primary_key=True)
@@ -37,7 +38,7 @@ class Routes(Base):
     route_color = Column(String)
     route_text_color = Column(String)
 
-# Модель для таблицы Shapes
+
 class Shapes(Base):
     __tablename__ = 'shapes'
     shape_id = Column(String, primary_key=True)
@@ -45,7 +46,7 @@ class Shapes(Base):
     shape_pt_lon = Column(Float)
     shape_pt_sequence = Column(Integer)
 
-# Модель для таблицы Stops
+
 class Stops(Base):
     __tablename__ = 'stops'
     stop_id = Column(String, primary_key=True)
@@ -53,6 +54,10 @@ class Stops(Base):
     stop_lat = Column(Float)
     stop_lon = Column(Float)
     zone_id = Column(String)
+
+    def __str__(self):
+        return self.stop_name
+
 
 class StopTimes(Base):
     __tablename__ = 'stop_times'
@@ -66,10 +71,11 @@ class StopTimes(Base):
     drop_off_type = Column(String)
     __table_args__ = (PrimaryKeyConstraint('trip_id', 'stop_sequence'),)
 
+
 class Trips(Base):
     __tablename__ = 'trips'
     trip_id = Column(String, primary_key=True)
     route_id = Column(String)
     service_id = Column(String)
     trip_headsign = Column(String)
-    direction_id = Column(Integer)
+    direction_id = Column(Integer) 

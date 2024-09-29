@@ -1,6 +1,7 @@
 import requests
 from django.shortcuts import render
 
+
 def get_coordinates(place_name):
     url = "https://nominatim.openstreetmap.org/search"
     params = {
@@ -11,6 +12,11 @@ def get_coordinates(place_name):
     }
 
     response = requests.get(url, params=params)
+
+    if response.status_code != 200:
+        print(f"Error: status code received {response.status_code}")
+        return None
+
     data = response.json()
 
     if data:
@@ -18,21 +24,6 @@ def get_coordinates(place_name):
     else:
         return None, None
 
+
 def map_with_stops_view(request):
-    stops = [
-        {"name": "Остановка 1", "address": "Świętego Czesława, Górna Wilda, Wilda, Poznan, Greater Poland Voivodeship, 61-575, Poland"},
-    ]
-
-    stops_with_coords = []
-    for stop in stops:
-        lat, lon = get_coordinates(stop["address"])
-        if lat and lon:
-            stops_with_coords.append({
-                "name": stop["name"],
-                "lat": lat,
-                "lon": lon
-            })
-
-    print(stops_with_coords)
-
-    return render(request, 'map/map.html', {'stops': stops_with_coords})
+    return render(request, 'map/map.html')

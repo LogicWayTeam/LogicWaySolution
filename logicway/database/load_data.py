@@ -9,7 +9,6 @@ from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
-
 db_name = os.getenv('DB_NAME')
 db_user = os.getenv('DB_USER')
 db_password = os.getenv('DB_PASSWORD')
@@ -160,7 +159,7 @@ with Session() as session:
         insert_data(routes_data, Routes, session, "Routes", column_mapping=routes_mapping)
         insert_data(shapes_data, Shapes, session, "Shapes")
         insert_data(stops_data, Stops, session, "Stops", column_mapping=stops_mapping)
-        insert_data(stop_times_data, StopTimes, session, "Stop Times", column_mapping=stop_times_mapping)
+        #insert_data(stop_times_data, StopTimes, session, "Stop Times", column_mapping=stop_times_mapping)
         insert_data(trips_data, Trips, session, "Trips", column_mapping=trips_mapping)
 
         session.commit()
