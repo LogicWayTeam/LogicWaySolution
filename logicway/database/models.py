@@ -53,7 +53,6 @@ class Stops(Base):
     stop_lat = Column(Float)
     stop_lon = Column(Float)
     zone_id = Column(String)
-    stop_code = Column(String)
 
 class StopTimes(Base):
     __tablename__ = 'stop_times'
@@ -74,7 +73,3 @@ class Trips(Base):
     service_id = Column(String)
     trip_headsign = Column(String)
     direction_id = Column(Integer)
-    shape_id = Column(String)
-    wheelchair_accessible = Column(Boolean)
-    brigade = Column(String)
-    block_id = Column(String)
