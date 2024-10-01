@@ -54,7 +54,6 @@ class Stops(Base):
     stop_lat = Column(Float)
     stop_lon = Column(Float)
     zone_id = Column(String)
-    stop_code = Column(String)
 
     def __str__(self):
         return self.stop_name
@@ -79,8 +78,4 @@ class Trips(Base):
     route_id = Column(String)
     service_id = Column(String)
     trip_headsign = Column(String)
-    direction_id = Column(Integer)
-    shape_id = Column(String)
-    wheelchair_accessible = Column(Boolean)
-    brigade = Column(String)
-    block_id = Column(String)
+    direction_id = Column(Integer) 
