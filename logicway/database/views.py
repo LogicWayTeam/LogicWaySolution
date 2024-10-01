@@ -3,7 +3,7 @@ from .models import Stops
 from django.http import JsonResponse
 
 
-def get_stops():
+def get_stops(request):
     session = SessionLocal()
 
     try:
