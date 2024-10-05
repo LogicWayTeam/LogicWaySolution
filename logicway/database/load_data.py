@@ -26,7 +26,6 @@ Base.metadata.create_all(engine)
 script_dir = os.path.dirname(os.path.abspath(__file__))
 data_dir = os.path.join(script_dir, 'data', 'ZTMPoznanGTFS')
 
-# File paths
 agency_file = os.path.join(data_dir, 'agency.txt')
 calendar_file = os.path.join(data_dir, 'calendar.txt')
 routes_file = os.path.join(data_dir, 'routes.txt')
@@ -35,7 +34,6 @@ stops_file = os.path.join(data_dir, 'stops.txt')
 stop_times_file = os.path.join(data_dir, 'stop_times.txt')
 trips_file = os.path.join(data_dir, 'trips.txt')
 
-# Read data files
 agency_data = pd.read_csv(agency_file)
 calendar_data = pd.read_csv(calendar_file)
 routes_data = pd.read_csv(routes_file)
@@ -123,6 +121,7 @@ routes_mapping = {
     'agency_id': 'agency_id',
     'route_short_name': 'route_short_name',
     'route_long_name': 'route_long_name',
+    'routes_desc': 'routes_desc',
     'route_type': 'route_type',
     'route_color': 'route_color',
     'route_text_color': 'route_text_color'
