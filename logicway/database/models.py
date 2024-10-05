@@ -34,6 +34,7 @@ class Routes(Base):
     route_short_name = Column(String)
     route_long_name = Column(String)
     route_type = Column(Integer)
+    route_desc = Column(Integer)
     route_color = Column(String)
     route_text_color = Column(String)
 
