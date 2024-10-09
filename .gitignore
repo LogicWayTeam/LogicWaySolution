@@ -1,3 +1,4 @@
 # .gitignore
 .env
-logicway/database/data/ZTMPoznanGTFS/
+logicway/database/data/
+.idea\misc.xml
