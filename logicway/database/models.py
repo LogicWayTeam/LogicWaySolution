@@ -1,4 +1,6 @@
-from sqlalchemy import Column, String, Boolean, Integer, Date, Time, Float, PrimaryKeyConstraint
+from xml.dom.pulldom import CHARACTERS
+
+from sqlalchemy import Column, String, Boolean, Integer, Date, Time, Float, ForeignKey, PrimaryKeyConstraint
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -31,9 +33,10 @@ class Calendar(Base):
 class Routes(Base):
     __tablename__ = 'routes'
     route_id = Column(String, primary_key=True)
-    agency_id = Column(String)
+    agency_id = Column(String, ForeignKey('agency.agency_id'))
     route_short_name = Column(String)
     route_long_name = Column(String)
+    route_desc = Column(String)
     route_type = Column(Integer)
     route_color = Column(String)
     route_text_color = Column(String)
@@ -78,4 +81,4 @@ class Trips(Base):
     route_id = Column(String)
     service_id = Column(String)
     trip_headsign = Column(String)
-    direction_id = Column(Integer) 
+    direction_id = Column(Integer)
