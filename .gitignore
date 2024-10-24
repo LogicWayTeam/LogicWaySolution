@@ -1,4 +1,4 @@
 # .gitignore
 .env
 logicway/database/data/
-.idea\misc.xml
+.idea/misc.xml
