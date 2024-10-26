@@ -17,7 +17,7 @@ loadScript('https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', function () {
 
 function initializeMap() {
     const poznanCenter = [52.406376, 16.925167];
-    const ghDomen = `http://127.0.0.1:8000/map/graphhopper-proxy/route`;
+    const ghDomen = `/map/graphhopper-proxy/route`;
 
     // TODO : Normalise map zooming
     let map = L.map('map').setView(poznanCenter, 13);
@@ -31,7 +31,7 @@ function initializeMap() {
     var routingControl = null;
 
 
-    fetch('/api/route/3/')
+    fetch('/api/route/10/')
         .then(response => response.json())
         .then(stop_names => {
             const stopCoordinates = [];
@@ -53,7 +53,7 @@ function initializeMap() {
                 .then(() => {
                     console.info(stopCoordinates);
                     if (stopCoordinates.length > 0) {
-                        buildRoute(stopCoordinates, 'car');
+                        buildRoute(stopCoordinates, 'car', 'blue');
                     }
                 })
                 .catch(error => {
@@ -62,7 +62,7 @@ function initializeMap() {
         });
 
 
-    function reverseGeocode(lat, lon, callback) {
+    function reverseGeocodeNominatim(lat, lon, callback) {
         var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
         fetch(url)
             .then(response => response.json())
@@ -79,7 +79,23 @@ function initializeMap() {
             });
     }
 
-    function buildRoute(stops, profile) {
+    function reverseGeocodeOverpass(lat, lon, callback) {
+        const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];way(around:50,${lat},${lon})[name];out;`;
+
+        fetch(overpassUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.elements.length > 0) {
+                    const name = data.elements[0].tags.name;
+                    callback(name);
+                } else {
+                    callback("No nearby roads or places found.");
+                }
+            })
+            .catch(error => callback(error));
+    }
+
+    function buildRoute(stops, profile, color) {
         const points = stops.map(stop => `${stop.lat},${stop.lng}`).join('&point=');
         const ghURL = `${ghDomen}?point=${points}&profile=${profile}`;
 
@@ -94,7 +110,7 @@ function initializeMap() {
                         map.removeLayer(routingControl);
                     }
 
-                    routingControl = L.polyline(latLngRoute, { color: 'blue', weight: 5 }).addTo(map);
+                    routingControl = L.polyline(latLngRoute, { color: color, weight: 5 }).addTo(map);
 
                     map.fitBounds(L.polyline(latLngRoute).getBounds());
                 } else {
@@ -104,38 +120,11 @@ function initializeMap() {
             .catch(error => console.error('Error fetching route:', error));
     }
 
-    function buildCarRoute(stops) {
-        if (routingControl) {
-            map.removeControl(routingControl);
-        }
-
-        const points = stops.map(stop => `${stop.lat},${stop.lng}`).join('&point=');
-
-        const url = `${ghDomen}/route?point=${points}&profile=car`;
-
-        fetch(url)
-            .then(response => response.json())
-            .then(data => {
-                if (data.paths && data.paths.length > 0) {
-                    const routePoints = data.paths[0].points.coordinates;
-
-                    const latlngs = routePoints.map(coord => L.latLng(coord[1], coord[0]));
-
-                    const routeLine = L.polyline(latlngs, { color: 'blue' }).addTo(map);
-
-                    map.fitBounds(routeLine.getBounds());
-                } else {
-                    console.error('Маршрут не найден: нет данных в paths');
-                }
-            })
-            .catch(error => console.error('Ошибка при построении маршрута:', error));
-    }
-
     map.on('click', function (e) {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocode(lat, lon, function (address) {
+        reverseGeocodeOverpass(lat, lon, function (address) {
             if (lastLMarker) {
                 map.removeLayer(lastLMarker);
             }
@@ -145,7 +134,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot');
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
             }
         });
     });
@@ -154,7 +143,7 @@ function initializeMap() {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocode(lat, lon, function (address) {
+        reverseGeocodeOverpass(lat, lon, function (address) {
             if (lastRMarker) {
                 map.removeLayer(lastRMarker);
             }
@@ -164,7 +153,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot');
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
             }
         });
     });
@@ -199,8 +188,8 @@ function initializeMap() {
             var stopName = stop.stop_name;
 
             L.circle([lat, lon], {
-                color: 'blue',
-                fillColor: '#30a3dc',
+                color: '#931050',
+                fillColor: '#931050',
                 fillOpacity: 0.5,
                 radius: 2
             }).addTo(map)

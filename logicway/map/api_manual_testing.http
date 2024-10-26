@@ -1,5 +1,12 @@
+# Real Graphhopper API
 GET https://logicway.taile241c6.ts.net:8989/route?point=54.608207,17.670096&point=54.582748,17.395502&profile=car
 
 ###
 
+# Proxy for Graphhopper
 GET http://127.0.0.1:8000/map/graphhopper-proxy/route?point=54.608207,17.670096&point=54.582748,17.395502&profile=car
+
+###
+
+#Geocoding [404]
+GET https://logicway.taile241c6.ts.net:8989/geocode?q=minsk
