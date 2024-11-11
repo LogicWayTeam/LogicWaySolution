@@ -2,7 +2,7 @@ from .database import SessionLocal
 from .models import Stops, Routes
 from django.http import JsonResponse
 import re
-import unicodedata
+
 
 def get_stops(request):
     session = SessionLocal()
@@ -38,33 +38,28 @@ def get_stop(request, stop_name):
     finally:
         session.close()
 
-def clean_response(text):
-    text = unicodedata.normalize('NFKD', text)
-    text = text.encode('ascii', 'ignore').decode('utf-8')
 
+def clean_string(text):
     text = re.sub(r'\^[A-Z]', '', text)
-    text = re.sub(r'\b[a-ząćęłńóśźż]+\b', '', text)
     text = re.sub(r'\s{2,}', ' ', text)
 
-    text = re.sub(r'[^\w\s\-\.:]', '', text)
-    text = text.strip()
+    #text = re.sub(r'[^\w\s\-:]', '', text)
+
+    text = ' '.join([word.lower().capitalize() for word in text.split(' ')])
 
     return text
 
 
-def get_route(request, route_id):
+def get_route(request, route_id, direction):
     with SessionLocal() as session:
         try:
             route = session.query(Routes).get(route_id)
-            route_desc = route.route_desc
+            route_desc = route.route_desc.split('|')[direction > 0 if 1 else 0]
 
-            route_desc_arr = route_desc.split(' - ')
+            f1_clean_route_desc = clean_string(route_desc)
 
-            print(route_desc_arr)
-
-            cleaned_route_desc_arr = [clean_response(desc) for desc in route_desc_arr]
+            cleaned_route_desc_arr = f1_clean_route_desc.split(' - ')
 
             return JsonResponse(cleaned_route_desc_arr, safe=False)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-

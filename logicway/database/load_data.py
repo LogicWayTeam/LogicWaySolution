@@ -98,8 +98,6 @@ def read_csv_with_types(file_path, dtype_mapping, date_columns=[]):
     df = pd.read_csv(file_path, dtype=dtype_mapping)
     for date_column in date_columns:
         df[date_column] = pd.to_datetime(df[date_column], format='%Y%m%d').dt.date
-    #print(f"Data sample from {file_path}:")
-    #print(df.head())
     return df
 
 
