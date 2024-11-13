@@ -88,4 +88,4 @@ def test_get_route_api(client):
                 get_route_data(url)
 
     except Exception as e:
-        print(f"Error occurred during test: {e}")
+            print(f"Error occurred during test: {e}")
