@@ -1,7 +1,6 @@
 from xml.dom.pulldom import CHARACTERS
-
 from sqlalchemy import Column, String, Boolean, Integer, Date, Time, Float, ForeignKey, PrimaryKeyConstraint
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
@@ -61,6 +60,15 @@ class Stops(Base):
     def __str__(self):
         return self.stop_name
 
+    def to_dict(self):
+        return {
+            'stop_id': self.stop_id,
+            'stop_name': self.stop_name,
+            'stop_lat': self.stop_lat,
+            'stop_lon': self.stop_lon,
+            'zone_id': self.zone_id,
+        }
+
 
 class StopTimes(Base):
     __tablename__ = 'stop_times'
@@ -82,3 +90,6 @@ class Trips(Base):
     service_id = Column(String)
     trip_headsign = Column(String)
     direction_id = Column(Integer)
+    shape_id = Column(Integer)
+    wheelchair_accessible = Column(Integer)
+    brigade = Column(Integer)
