@@ -20,6 +20,6 @@ from django.urls import include, path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('scraper/', include('scraper.urls', namespace='scraper')),
-    path('', include('database.urls')),
+    path('api/', include('database.urls')),  # Changed the root path for API endpoints
     path('map/', include('map.urls', namespace='map')),
 ]

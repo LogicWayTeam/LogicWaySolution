@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import sys
 from pathlib import Path
 import os
 from dotenv import load_dotenv
@@ -53,7 +53,12 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'logicway.urls'
+IS_TESTING = 'pytest' in sys.modules or 'test' in sys.argv
+if IS_TESTING:
+    ROOT_URLCONF = 'logicway.logicway.urls'
+else:
+    ROOT_URLCONF = 'logicway.urls'
+
 
 TEMPLATES = [
     {
@@ -106,7 +111,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

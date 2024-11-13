@@ -126,7 +126,6 @@ def safe_convert_time(time_str):
         corrected_time_str = f"{hours:02}:{minutes:02}:{seconds:02}"
         return datetime.strptime(corrected_time_str, '%H:%M:%S').time()
     except ValueError:
-        #print(f"Warning: time data '{time_str}' is invalid")
         return None
 
 
@@ -141,8 +140,7 @@ def get_existing_ids(session, model_class, id_column_name):
     return existing_ids
 
 
-def insert_data_bulk(data, model_class, session, message, column_mapping=None, batch_size=1000):
-    #print(f"Starting to load: {message}")
+def insert_data_bulk(data, model_class, session, message, column_mapping=None, batch_size=10000):
     objects = []
 
     if column_mapping:
@@ -175,7 +173,6 @@ def insert_data_bulk(data, model_class, session, message, column_mapping=None, b
         if 'departure_time' in kwargs and isinstance(kwargs['departure_time'], str):
             kwargs['departure_time'] = safe_convert_time(kwargs['departure_time'])
 
-        #print(f"Data to insert for {model_class.__name__}: {kwargs}")
 
         if column_mapping and kwargs[id_column_name] in existing_ids:
             continue

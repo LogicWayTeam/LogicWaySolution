@@ -45,6 +45,7 @@ def clean_string(text):
 
     #text = re.sub(r'[^\w\s\-:]', '', text)
 
+
     text = ' '.join([word.lower().capitalize() for word in text.split(' ')])
 
     return text
