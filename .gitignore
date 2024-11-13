@@ -1,4 +1,10 @@
 # .gitignore
+
+# Ignore node_modules
 .env
+
+# database tmp data
 logicway/database/data/
-.idea\misc.xml
+
+# internal idea files
+.idea/misc.xml
