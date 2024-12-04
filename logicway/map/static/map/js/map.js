@@ -9,13 +9,17 @@ function loadScript(url, callback) {
 
 loadScript('https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', function () {
     loadScript('https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js', function () {
-        initializeMap();
+        loadScript("https://unpkg.com/@mapbox/polyline", function () {
+            initializeMap();
+        });
     });
 });
 
 function initializeMap() {
     const poznanCenter = [52.406376, 16.925167];
+    const ghDomen = `/map/graphhopper-proxy/route`;
 
+    // TODO : Normalise map zooming
     let map = L.map('map').setView(poznanCenter, 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -27,18 +31,38 @@ function initializeMap() {
     var routingControl = null;
 
 
-    // AJAX request to the server
-    fetch('/api/stops/')
+    fetch('/api/route/10/')
         .then(response => response.json())
-        .then(data => {
-            addStopsToMap(data);
-        })
-        .catch(error => {
-            console.error('Error fetching stops:', error);
+        .then(stop_names => {
+            const stopCoordinates = [];
+
+            const stopPromises = stop_names.map(stop_name => {
+                return fetch('/api/stop/' + stop_name + '/')
+                    .then(response => response.json())
+                    .then(stop_data => {
+                        console.info('Stop data:', stop_data);
+                        addStopsToMap([stop_data]);
+                        stopCoordinates.push({lat: stop_data.stop_lat,lng: stop_data.stop_lon});
+                    })
+                    .catch(error => {
+                        console.error('Error fetching stop:', error);
+                    });
+            });
+
+            Promise.all(stopPromises)
+                .then(() => {
+                    console.info(stopCoordinates);
+                    if (stopCoordinates.length > 0) {
+                        buildRoute(stopCoordinates, 'car', 'blue');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching route:', error);
+                });
         });
 
 
-    function reverseGeocode(lat, lon, callback) {
+    function reverseGeocodeNominatim(lat, lon, callback) {
         var url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
         fetch(url)
             .then(response => response.json())
@@ -55,25 +79,52 @@ function initializeMap() {
             });
     }
 
-    function buildRoute(start, end) {
-        if (routingControl) {
-            map.removeControl(routingControl);
-        }
+    function reverseGeocodeOverpass(lat, lon, callback) {
+        const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];way(around:50,${lat},${lon})[name];out;`;
 
-        routingControl = L.Routing.control({
-            waypoints: [
-                L.latLng(start.lat, start.lng),
-                L.latLng(end.lat, end.lng)
-            ],
-            routeWhileDragging: true
-        }).addTo(map);
+        fetch(overpassUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data.elements.length > 0) {
+                    const name = data.elements[0].tags.name;
+                    callback(name);
+                } else {
+                    callback("No nearby roads or places found.");
+                }
+            })
+            .catch(error => callback(error));
+    }
+
+    function buildRoute(stops, profile, color) {
+        const points = stops.map(stop => `${stop.lat},${stop.lng}`).join('&point=');
+        const ghURL = `${ghDomen}?point=${points}&profile=${profile}`;
+
+        fetch(ghURL)
+            .then(response => response.json())
+            .then(data => {
+                if (data.paths && data.paths.length > 0 && data.paths[0].points) {
+                    const route = polyline.decode(data.paths[0].points);
+                    const latLngRoute = route.map(point => [point[0], point[1]]);  // Adjust coordinates to [lat, lng]
+
+                    if (routingControl) {
+                        map.removeLayer(routingControl);
+                    }
+
+                    routingControl = L.polyline(latLngRoute, { color: color, weight: 5 }).addTo(map);
+
+                    map.fitBounds(L.polyline(latLngRoute).getBounds());
+                } else {
+                    console.error('No valid route data:', data);
+                }
+            })
+            .catch(error => console.error('Error fetching route:', error));
     }
 
     map.on('click', function (e) {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocode(lat, lon, function (address) {
+        reverseGeocodeOverpass(lat, lon, function (address) {
             if (lastLMarker) {
                 map.removeLayer(lastLMarker);
             }
@@ -83,7 +134,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute(lastLMarker.getLatLng(), lastRMarker.getLatLng());
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
             }
         });
     });
@@ -92,7 +143,7 @@ function initializeMap() {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocode(lat, lon, function (address) {
+        reverseGeocodeOverpass(lat, lon, function (address) {
             if (lastRMarker) {
                 map.removeLayer(lastRMarker);
             }
@@ -102,7 +153,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute(lastLMarker.getLatLng(), lastRMarker.getLatLng());
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
             }
         });
     });
@@ -137,8 +188,8 @@ function initializeMap() {
             var stopName = stop.stop_name;
 
             L.circle([lat, lon], {
-                color: 'blue',
-                fillColor: '#30a3dc',
+                color: '#931050',
+                fillColor: '#931050',
                 fillOpacity: 0.5,
                 radius: 2
             }).addTo(map)
