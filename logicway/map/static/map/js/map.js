@@ -17,7 +17,6 @@ loadScript('https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', function () {
 
 function initializeMap() {
     const poznanCenter = [52.406376, 16.925167];
-    const ghDomen = `/map/graphhopper-proxy/route`;
 
     // TODO : Normalise map zooming
     let map = L.map('map').setView(poznanCenter, 13);
@@ -31,7 +30,7 @@ function initializeMap() {
     var routingControl = null;
 
 
-    fetch('/api/route/10/')
+    fetch('/api/route/5/1')
         .then(response => response.json())
         .then(stop_names => {
             const stopCoordinates = [];
@@ -95,16 +94,32 @@ function initializeMap() {
             .catch(error => callback(error));
     }
 
-    function buildRoute(stops, profile, color) {
-        const points = stops.map(stop => `${stop.lat},${stop.lng}`).join('&point=');
-        const ghURL = `${ghDomen}?point=${points}&profile=${profile}`;
+    function reverseGeocodeLocal(lat, lon, callback) {
+        const route_engine = `http://localhost:8001/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
 
-        fetch(ghURL)
+        fetch(route_engine)
             .then(response => response.json())
             .then(data => {
-                if (data.paths && data.paths.length > 0 && data.paths[0].points) {
-                    const route = polyline.decode(data.paths[0].points);
-                    const latLngRoute = route.map(point => [point[0], point[1]]);  // Adjust coordinates to [lat, lng]
+                if (data.address) {
+                    console.log(data.address);
+                    callback(data.address);
+                } else {
+                    callback("No address found.");
+                }
+            })
+            .catch(error => callback(error));
+    }
+
+    function buildRoute(stops, profile, color) {
+        const points = stops.map(stop => `${stop.lng},${stop.lat}`).join(';');
+        const valhallaURL = `http://localhost:8001/route/get_route?locations=${points}`;
+
+        fetch(valhallaURL)
+            .then(response => response.json())
+            .then(data => {
+                if (data.geometry && data.duration) {
+                    const route = data.geometry;
+                    const latLngRoute = route.map(point => [point[1], point[0]]);
 
                     if (routingControl) {
                         map.removeLayer(routingControl);
@@ -120,11 +135,12 @@ function initializeMap() {
             .catch(error => console.error('Error fetching route:', error));
     }
 
+
     map.on('click', function (e) {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocodeOverpass(lat, lon, function (address) {
+        reverseGeocodeLocal(lat, lon, function (address) {
             if (lastLMarker) {
                 map.removeLayer(lastLMarker);
             }
@@ -143,7 +159,7 @@ function initializeMap() {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocodeOverpass(lat, lon, function (address) {
+        reverseGeocodeLocal(lat, lon, function (address) {
             if (lastRMarker) {
                 map.removeLayer(lastRMarker);
             }
