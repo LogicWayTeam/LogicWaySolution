@@ -18,7 +18,6 @@ loadScript('https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', function () {
 function initializeMap() {
     const poznanCenter = [52.406376, 16.925167];
 
-    // TODO : Normalise map zooming
     let map = L.map('map').setView(poznanCenter, 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -29,36 +28,50 @@ function initializeMap() {
     var lastRMarker = null;
     var routingControl = null;
 
+    allStops();
 
-    fetch('/api/route/5/1')
-        .then(response => response.json())
-        .then(stop_names => {
-            const stopCoordinates = [];
+    function allStops() {
+        fetch('/api/stops/')
+            .then(response => response.json())
+            .then(data => {
+                addStopsToMap(data);
+            })
+            .catch(error => {
+                console.error('Error fetching stops:', error);
+            });
+    }
 
-            const stopPromises = stop_names.map(stop_name => {
-                return fetch('/api/stop/' + stop_name + '/')
-                    .then(response => response.json())
-                    .then(stop_data => {
-                        console.info('Stop data:', stop_data);
-                        addStopsToMap([stop_data]);
-                        stopCoordinates.push({lat: stop_data.stop_lat,lng: stop_data.stop_lon});
+    function autobusRoute() {
+        fetch('/api/route/5/1')
+            .then(response => response.json())
+            .then(stop_names => {
+                const stopCoordinates = [];
+
+                const stopPromises = stop_names.map(stop_name => {
+                    return fetch('/api/stop/' + stop_name + '/')
+                        .then(response => response.json())
+                        .then(stop_data => {
+                            console.info('Stop data:', stop_data);
+                            addStopsToMap([stop_data]);
+                            stopCoordinates.push({lat: stop_data.stop_lat, lng: stop_data.stop_lon});
+                        })
+                        .catch(error => {
+                            console.error('Error fetching stop:', error);
+                        });
+                });
+
+                Promise.all(stopPromises)
+                    .then(() => {
+                        console.info(stopCoordinates);
+                        if (stopCoordinates.length > 0) {
+                            buildRoute(stopCoordinates, 'auto', 'blue');
+                        }
                     })
                     .catch(error => {
-                        console.error('Error fetching stop:', error);
+                        console.error('Error fetching route:', error);
                     });
             });
-
-            Promise.all(stopPromises)
-                .then(() => {
-                    console.info(stopCoordinates);
-                    if (stopCoordinates.length > 0) {
-                        buildRoute(stopCoordinates, 'car', 'blue');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching route:', error);
-                });
-        });
+    }
 
 
     function reverseGeocodeNominatim(lat, lon, callback) {
@@ -112,7 +125,7 @@ function initializeMap() {
 
     function buildRoute(stops, profile, color) {
         const points = stops.map(stop => `${stop.lng},${stop.lat}`).join(';');
-        const valhallaURL = `http://localhost:8001/route/get_route?locations=${points}`;
+        const valhallaURL = `http://localhost:8001/route/get_route?profile=${profile}&locations=${points}`;
 
         fetch(valhallaURL)
             .then(response => response.json())
@@ -169,7 +182,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'pedestrian', 'red');
             }
         });
     });
