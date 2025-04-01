@@ -17,9 +17,7 @@ loadScript('https://unpkg.com/leaflet@1.7.1/dist/leaflet.js', function () {
 
 function initializeMap() {
     const poznanCenter = [52.406376, 16.925167];
-    const ghDomen = `/map/graphhopper-proxy/route`;
 
-    // TODO : Normalise map zooming
     let map = L.map('map').setView(poznanCenter, 13);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -30,36 +28,50 @@ function initializeMap() {
     var lastRMarker = null;
     var routingControl = null;
 
+    autobusRoute();
 
-    fetch('/api/route/10/')
-        .then(response => response.json())
-        .then(stop_names => {
-            const stopCoordinates = [];
+    function allStops() {
+        fetch('/api/stops/')
+            .then(response => response.json())
+            .then(data => {
+                addStopsToMap(data);
+            })
+            .catch(error => {
+                console.error('Error fetching stops:', error);
+            });
+    }
 
-            const stopPromises = stop_names.map(stop_name => {
-                return fetch('/api/stop/' + stop_name + '/')
-                    .then(response => response.json())
-                    .then(stop_data => {
-                        console.info('Stop data:', stop_data);
-                        addStopsToMap([stop_data]);
-                        stopCoordinates.push({lat: stop_data.stop_lat,lng: stop_data.stop_lon});
+    function autobusRoute() {
+        fetch('/api/route/5/1')
+            .then(response => response.json())
+            .then(stop_names => {
+                const stopCoordinates = [];
+
+                const stopPromises = stop_names.map(stop_name => {
+                    return fetch('/api/stop/' + stop_name + '/')
+                        .then(response => response.json())
+                        .then(stop_data => {
+                            console.info('Stop data:', stop_data);
+                            addStopsToMap([stop_data]);
+                            stopCoordinates.push({lat: stop_data.stop_lat, lng: stop_data.stop_lon});
+                        })
+                        .catch(error => {
+                            console.error('Error fetching stop:', error);
+                        });
+                });
+
+                Promise.all(stopPromises)
+                    .then(() => {
+                        console.info(stopCoordinates);
+                        if (stopCoordinates.length > 0) {
+                            buildRoute(stopCoordinates, 'auto', 'blue');
+                        }
                     })
                     .catch(error => {
-                        console.error('Error fetching stop:', error);
+                        console.error('Error fetching route:', error);
                     });
             });
-
-            Promise.all(stopPromises)
-                .then(() => {
-                    console.info(stopCoordinates);
-                    if (stopCoordinates.length > 0) {
-                        buildRoute(stopCoordinates, 'car', 'blue');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching route:', error);
-                });
-        });
+    }
 
 
     function reverseGeocodeNominatim(lat, lon, callback) {
@@ -95,16 +107,32 @@ function initializeMap() {
             .catch(error => callback(error));
     }
 
-    function buildRoute(stops, profile, color) {
-        const points = stops.map(stop => `${stop.lat},${stop.lng}`).join('&point=');
-        const ghURL = `${ghDomen}?point=${points}&profile=${profile}`;
+    function reverseGeocodeLocal(lat, lon, callback) {
+        const route_engine = `${ROUTE_ENGINE_URL}/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
 
-        fetch(ghURL)
+        fetch(route_engine)
             .then(response => response.json())
             .then(data => {
-                if (data.paths && data.paths.length > 0 && data.paths[0].points) {
-                    const route = polyline.decode(data.paths[0].points);
-                    const latLngRoute = route.map(point => [point[0], point[1]]);  // Adjust coordinates to [lat, lng]
+                if (data.address) {
+                    console.log(data.address);
+                    callback(data.address);
+                } else {
+                    callback("No address found.");
+                }
+            })
+            .catch(error => callback(error));
+    }
+
+    function buildRoute(stops, profile, color) {
+        const points = stops.map(stop => `${stop.lng},${stop.lat}`).join(';');
+        const valhallaURL = `${ROUTE_ENGINE_URL}/route/get_route?profile=${profile}&locations=${points}`;
+
+        fetch(valhallaURL)
+            .then(response => response.json())
+            .then(data => {
+                if (data.geometry && data.duration) {
+                    const route = data.geometry;
+                    const latLngRoute = route.map(point => [point[1], point[0]]);
 
                     if (routingControl) {
                         map.removeLayer(routingControl);
@@ -120,11 +148,12 @@ function initializeMap() {
             .catch(error => console.error('Error fetching route:', error));
     }
 
+
     map.on('click', function (e) {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocodeOverpass(lat, lon, function (address) {
+        reverseGeocodeLocal(lat, lon, function (address) {
             if (lastLMarker) {
                 map.removeLayer(lastLMarker);
             }
@@ -143,7 +172,7 @@ function initializeMap() {
         var lat = e.latlng.lat;
         var lon = e.latlng.lng;
 
-        reverseGeocodeOverpass(lat, lon, function (address) {
+        reverseGeocodeLocal(lat, lon, function (address) {
             if (lastRMarker) {
                 map.removeLayer(lastRMarker);
             }
@@ -153,7 +182,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'pedestrian', 'red');
             }
         });
     });

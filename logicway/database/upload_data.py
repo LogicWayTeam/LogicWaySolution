@@ -9,7 +9,11 @@ headers = {
     "Content-Type": "application/x-www-form-urlencoded",
 }
 
-storage_url = 'https://github.com/LogicWayTeam/PoznanGTFS.git'
+if os.getenv("SSH") == "1":
+    storage_url = 'git@github.com:LogicWayTeam/PoznanGTFS.git'
+else:
+    storage_url = 'https://github.com/LogicWayTeam/PoznanGTFS.git'
+
 
 base_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
 
