@@ -13,8 +13,7 @@ def geocode_address(request):
             'longitude': location.longitude,
         })
     else:
-        return JsonResponse({"error": "Not founded"}, status=400)
-
+        return JsonResponse({"error": "Not found"}, status=400)
 def reverse_geocode(request):
     lon = request.GET.get('lon')
     lat = request.GET.get('lat')
