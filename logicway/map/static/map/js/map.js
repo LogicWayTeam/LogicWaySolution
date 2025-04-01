@@ -28,7 +28,7 @@ function initializeMap() {
     var lastRMarker = null;
     var routingControl = null;
 
-    allStops();
+    autobusRoute();
 
     function allStops() {
         fetch('/api/stops/')
@@ -108,7 +108,7 @@ function initializeMap() {
     }
 
     function reverseGeocodeLocal(lat, lon, callback) {
-        const route_engine = `http://localhost:8001/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
+        const route_engine = `${ROUTE_ENGINE_URL}/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
 
         fetch(route_engine)
             .then(response => response.json())
@@ -125,7 +125,7 @@ function initializeMap() {
 
     function buildRoute(stops, profile, color) {
         const points = stops.map(stop => `${stop.lng},${stop.lat}`).join(';');
-        const valhallaURL = `http://localhost:8001/route/get_route?profile=${profile}&locations=${points}`;
+        const valhallaURL = `${ROUTE_ENGINE_URL}/route/get_route?profile=${profile}&locations=${points}`;
 
         fetch(valhallaURL)
             .then(response => response.json())

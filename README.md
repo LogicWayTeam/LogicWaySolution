@@ -48,6 +48,8 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 # Django Secret Key
 SECRET_KEY=django-insecure-genkey
 
+ROUTE_ENGINE_URL=http://localhost:8001
+
 # PostgreSQL Database Settings
 DB_NAME=logic_way_db
 DB_USER=myuser
