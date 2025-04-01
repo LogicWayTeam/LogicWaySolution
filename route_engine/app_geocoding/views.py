@@ -22,6 +22,8 @@ def reverse_geocode(request):
         return JsonResponse({"error": "Missing 'lon' or 'lat' parameter"}, status=400)
 
     try:
+        lon = float(lon)
+        lat = float(lat)
         location = geolocator.reverse((lat, lon), exactly_one=True)
         if location:
             return JsonResponse({"address": location.address})
