@@ -11,22 +11,28 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+from urllib.parse import urlparse
+
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xv8dr=m!69x&lgfq0$a$wm+(sy+5=!$u@6v16e+twky4(3ohf)'
+SECRET_KEY = os.getenv('ROUTE_ENGINE_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+parsed_ROUTE_ENGINE_URL = urlparse(os.getenv('ROUTE_ENGINE_URL'))
 
+ALLOWED_HOSTS = [parsed_ROUTE_ENGINE_URL.hostname]
+CORS_ALLOW_ALL_ORIGINS = True
 
 # Application definition
 
@@ -125,5 +131,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-CORS_ALLOW_ALL_ORIGINS = True
