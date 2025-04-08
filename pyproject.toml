@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "logicway"
 version = "0.1.0"
-description = "An app for searchig best way to your destination point"
+description = "An app for searching best way to your destination point"
 authors = ["LogicWayTeam <nikolajvojna53@gmail.com>"]
 readme = "README.md"
 
