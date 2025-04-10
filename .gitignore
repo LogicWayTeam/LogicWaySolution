@@ -8,4 +8,4 @@ alembic.ini
 logicway/database/data/
 
 # internal idea files
-.idea/misc.xml
+.idea/

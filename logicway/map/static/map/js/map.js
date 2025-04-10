@@ -163,7 +163,7 @@ function initializeMap() {
                 .openPopup();
 
             if (lastLMarker && lastRMarker) {
-                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'foot', 'red');
+                buildRoute([lastLMarker.getLatLng(), lastRMarker.getLatLng()], 'pedestrian', 'red');
             }
         });
     });
