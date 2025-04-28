@@ -42,10 +42,7 @@ def get_stop(request, stop_name):
 def clean_string(text):
     text = re.sub(r'\^[A-Z]', '', text)
     text = re.sub(r'\s{2,}', ' ', text)
-
     #text = re.sub(r'[^\w\s\-:]', '', text)
-
-
     text = ' '.join([word.lower().capitalize() for word in text.split(' ')])
 
     return text
