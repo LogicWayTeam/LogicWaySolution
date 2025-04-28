@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import time
 from math import radians, sin, cos, asin, sqrt
+import json
 
 class BaseRouteBuilder(ABC):
     def haversine_distance(self, lat1, lon1, lat2, lon2): #km
@@ -29,7 +30,12 @@ class RouteSegment:
 
 @dataclass
 class TransportSegment(RouteSegment):
-    transport_type: int
-    route_number: str
-    departure_time: time = None
-    arrival_time: time = None
+    def __init__(self, type, from_stop, to_stop, transport_type, route_number,
+                 way_description, departure_time, arrival_time, stops=None):
+        super().__init__(type, from_stop, to_stop)
+        self.transport_type = transport_type
+        self.route_number = route_number
+        self.way_description = way_description
+        self.departure_time = departure_time
+        self.arrival_time = arrival_time
+        self.stops = stops or []

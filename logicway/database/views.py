@@ -58,6 +58,10 @@ def get_route(request, route_id, direction):
 
             cleaned_route_desc_arr = f1_clean_route_desc.split(' - ')
 
-            return JsonResponse(cleaned_route_desc_arr, safe=False)
+            return JsonResponse(
+                cleaned_route_desc_arr,
+                safe=False,
+                json_dumps_params={'ensure_ascii': False}
+            )
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
