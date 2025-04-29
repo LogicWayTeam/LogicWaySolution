@@ -55,6 +55,6 @@ DB_PASSWORD=mypassword
 DB_HOST=localhost
 DB_PORT=5432
 
-# Host to test
+# Host for tests
 TEST_HOST=http://127.0.0.1:8000
 ```
