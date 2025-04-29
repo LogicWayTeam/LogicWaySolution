@@ -76,7 +76,7 @@ def get_route_data(route_id, direction):
 
 def get_route(request, route_id, direction):
     route_stops_name = get_route_data(route_id, direction)
-    if not route_stops_name:
+    if route_stops_name:
         return JsonResponse(
             route_stops_name,
             safe=False,
