@@ -1,0 +1,11 @@
+# .gitignore
+
+# Ignore node_modules
+.env
+alembic.ini
+
+# database tmp data
+logicway/database/data/
+
+# internal idea files
+.idea/
