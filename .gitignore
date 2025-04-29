@@ -1,10 +1,15 @@
 # .gitignore
 
+# Ignore Python bytecode
+__pycache__/
+*.pyc
+
 # Ignore node_modules
 .env
+alembic.ini
 
 # database tmp data
 logicway/database/data/
 
 # internal idea files
-.idea/misc.xml
+.idea/
