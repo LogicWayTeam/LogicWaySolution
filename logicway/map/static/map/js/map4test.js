@@ -137,6 +137,7 @@ function initializeMap() {
 
                             window.currentRouteLines.push(walkingLine);
                         } else if (segment.type === "transport") {
+                            // Транспортные участки - сплошная линия с цветом по типу транспорта
                             const transportColor = getTransportColor(segment.transport_type);
                             const transportLine = L.polyline([
                                 segment.from_stop.location,
@@ -147,6 +148,7 @@ function initializeMap() {
                                 opacity: 0.8
                             }).addTo(map);
 
+                            // Добавляем маркеры остановок
                             const startMarker = L.marker(segment.from_stop.location, {
                                 icon: L.divIcon({
                                     className: 'stop-marker',
@@ -191,10 +193,10 @@ function initializeMap() {
 
     function getTransportColor(transportType) {
         const colors = {
-            0: '#FF0000', // Trams
-            1: '#0000FF', // Metro
-            2: '#00FF00', //
-            3: '#FFA500'  // Autobuses
+            0: '#FF0000', // Трамвай - красный
+            1: '#0000FF', // Метро - синий
+            2: '#00FF00', // Железная дорога - зеленый
+            3: '#FFA500'  // Автобус - оранжевый
         };
         return colors[transportType] || '#808080'; // Серый по умолчанию
     }
