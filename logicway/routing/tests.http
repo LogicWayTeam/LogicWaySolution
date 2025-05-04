@@ -1,0 +1,5 @@
+### Test SimpleGreedySearch 1 (hard)
+GET http://{{ip}}:{{port}}/routing/SimpleGreedySearch?start_lat=52.41581606857855&start_lon=16.931321024894718&end_lat=52.367136067011565&end_lon=16.84641838073731
+
+### Test SimpleGreedySearch 2 (light)
+GET http://{{ip}}:{{port}}/routing/SimpleGreedySearch?start_lat=52.39267766540908&start_lon=16.958084106445316&end_lat=52.39870070940516&end_lon=16.93503856658936
