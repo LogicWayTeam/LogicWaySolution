@@ -21,6 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('scraper/', include('scraper.urls', namespace='scraper')),
     path('api/', include('database.urls')),  # Changed the root path for API endpoints
-    path('map/', include('map.urls', namespace='map')),
+    path('', include('map.urls', namespace='map')),
     path('routing/', include('routing.urls', namespace='routing')),
 ]

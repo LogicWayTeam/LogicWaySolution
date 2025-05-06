@@ -58,3 +58,21 @@ DB_PASSWORD=mypassword
 DB_HOST=localhost
 DB_PORT=5432
 ```
+
+### Run the Django Server
+
+#### Developing
+
+``` bash
+python manage.py runserver --settings=logicway.settings.dev
+```
+
+#### Production
+
+``` bash
+python manage.py collectstatic --settings=logicway.settings.prod
+```
+
+``` bash
+python manage.py runserver --settings=logicway.settings.prod
+```

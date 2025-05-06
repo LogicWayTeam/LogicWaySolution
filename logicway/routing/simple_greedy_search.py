@@ -3,12 +3,14 @@ from database.models import Stops, Routes, StopTimes, Trips
 from sqlalchemy.orm import aliased
 from .typedef import (BaseRouteBuilder,
     Point, RouteSegment, TransportSegment)
-
+import concurrent.futures
+from functools import partial
 
 class SimpleGreedySearch(BaseRouteBuilder):
-    def __init__(self, max_walking_distance=3):
+    def __init__(self, max_walking_distance=1, timeout=60):
         self.db = SessionLocal()
         self.MAX_WALKING_DISTANCE = max_walking_distance  # km
+        self.TIMEOUT = timeout # seconds
 
     def find_nearby_stops(self, lat, lon, max_distance):
         stops = self.db.query(Stops).all()
@@ -69,18 +71,13 @@ class SimpleGreedySearch(BaseRouteBuilder):
 
         return None
 
-    def build_route(self, start_lat, start_lon, end_lat, end_lon):
+    def _build_route_internal(self, start_lat, start_lon, end_lat, end_lon):
         segments = []
-
         start_stops = self.find_nearby_stops(start_lat, start_lon, self.MAX_WALKING_DISTANCE)
         end_stops = self.find_nearby_stops(end_lat, end_lon, self.MAX_WALKING_DISTANCE)
 
         if not start_stops or not end_stops:
-            return [RouteSegment(
-                type='walking',
-                from_stop=Point(lat=start_lat, lon=start_lon),
-                to_stop=Point(lat=end_lat, lon=end_lon)
-            )]
+            return self.get_walking_route(start_lat, start_lon, end_lat, end_lon)
 
         start_stop = start_stops[0][0]
         segments.append(RouteSegment(
@@ -101,11 +98,25 @@ class SimpleGreedySearch(BaseRouteBuilder):
                     ))
                     return segments
 
-        return [RouteSegment(
-            type='walking',
-            from_stop=Point(lat=start_lat, lon=start_lon),
-            to_stop=Point(lat=end_lat, lon=end_lon)
-        )]
+        return self.get_walking_route(start_lat, start_lon, end_lat, end_lon)
+
+    def build_route(self, start_lat, start_lon, end_lat, end_lon):
+        """Wrapper that calls the internal route builder with a timeout"""
+        try:
+            # Create a partial function with the arguments
+            build_func = partial(self._build_route_internal, start_lat, start_lon, end_lat, end_lon)
+
+            # Run with timeout
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+                future = executor.submit(build_func)
+                return future.result(timeout=self.TIMEOUT)
+
+        except concurrent.futures.TimeoutError:
+            print(f"Route calculation timed out after {self.TIMEOUT} seconds, returning walking route")
+            return self.get_walking_route(start_lat, start_lon, end_lat, end_lon)
+        except Exception as e:
+            print(f"Error in route calculation: {e}")
+            return self.get_walking_route(start_lat, start_lon, end_lat, end_lon)
 
     def __del__(self):
         self.db.close()

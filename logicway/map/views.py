@@ -14,3 +14,8 @@ def map_render_test(request):
     return render(request, 'map/map4test.html',{
         'ROUTE_ENGINE_URL': ROUTE_ENGINE_URL
     })
+
+def map_prod(request):
+    return render(request, 'map/map_prod.html',{
+        'ROUTE_ENGINE_URL': ROUTE_ENGINE_URL
+    })

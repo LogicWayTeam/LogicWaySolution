@@ -148,7 +148,6 @@ function initializeMap() {
                                 opacity: 0.8
                             }).addTo(map);
 
-                            // Добавляем маркеры остановок
                             const startMarker = L.marker(segment.from_stop.location, {
                                 icon: L.divIcon({
                                     className: 'stop-marker',
@@ -193,12 +192,12 @@ function initializeMap() {
 
     function getTransportColor(transportType) {
         const colors = {
-            0: '#FF0000', // Трамвай - красный
-            1: '#0000FF', // Метро - синий
-            2: '#00FF00', // Железная дорога - зеленый
-            3: '#FFA500'  // Автобус - оранжевый
+            0: '#FF0000', // TRAM
+            1: '#0000FF', // SUBWAY
+            2: '#00FF00', // TRAIN
+            3: '#FFA500' // BUS
         };
-        return colors[transportType] || '#808080'; // Серый по умолчанию
+        return colors[transportType] || '#808080';
     }
 
     const styles = `
