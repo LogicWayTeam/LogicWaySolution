@@ -7,6 +7,9 @@ import 'leaflet-control-geocoder';
 import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
 import '../App.css';
 import ZoomControl from './ZoomControl';
+import useStops from './useStops';
+import { POZNAN_CENTER, redIcon } from './constants';
+
 
 const ROUTE_ENGINE_URL = 'http://127.0.0.1:8000';//delete hard code
 
@@ -17,22 +20,11 @@ const MapLogic = () => {
   const lastRMarkerRef = useRef(null);
   const routeLineRef = useRef(null);
 
-  const [stops, setStops] = useState([]);
-  const markersLayerRef = useRef(L.layerGroup());
   const searchMarkerRef = useRef(null);
+  const stops = useStops(map);
 
   useEffect(() => {
-    const poznanCenter = [52.406376, 16.925167];
-    map.setView(poznanCenter, 13);
-
-    const redIcon = L.icon({
-      iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
-      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-      shadowSize: [41, 41],
-    });
+    map.setView(POZNAN_CENTER, 13);
 
     const geocoderControl = L.Control.geocoder({
       geocoder: L.Control.Geocoder.nominatim(),
@@ -77,8 +69,6 @@ const MapLogic = () => {
     }, 1000);
     
     
-
-      
     // route button
     setTimeout(() => {
       const container = document.querySelector('.leaflet-control-geocoder');
@@ -117,7 +107,7 @@ const MapLogic = () => {
             }
         })
         .catch(error => callback(error));
-}
+  }
 
   function buildRoute(stops, profile, color) {
     const points = stops.map(p => `${p.lng},${p.lat}`).join(';');
@@ -211,44 +201,8 @@ const MapLogic = () => {
   }, [map]);
   //delete
 
-
-  useEffect(() => {
-    // Загружаем остановки с сервера
-    fetch('http://127.0.0.1:8000/api/stops/')
-      .then(res => res.json())
-      .then(data => {
-        setStops(data);
-      })
-      .catch(err => console.error('Error fetching stops:', err));
-  }, []);
-
-  useEffect(() => {
-    // Добавляем остановки на карту
-    const layerGroup = markersLayerRef.current;
-    layerGroup.clearLayers();
-
-    stops.forEach(stop => {
-      const { stop_lat, stop_lon, stop_name } = stop;
-
-      L.circle([stop_lat, stop_lon], {
-        color: '#931050',
-        fillColor: '#931050',
-        fillOpacity: 0.5,
-        radius: 2,
-      }).bindPopup(`<b>${stop_name}</b><br>Lat: ${stop_lat}, Lon: ${stop_lon}`)
-        .addTo(layerGroup);
-    });
-
-    layerGroup.addTo(map);
-
-    return () => {
-      map.removeLayer(layerGroup);
-    };
-  }, [stops, map]);
-
   return null;
 };
-
 
 
 const MapComponent = () => {

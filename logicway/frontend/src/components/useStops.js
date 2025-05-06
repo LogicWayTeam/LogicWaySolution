@@ -6,7 +6,7 @@ const useStops = (map) => {
   const markersLayerRef = useRef(L.layerGroup());
 
   useEffect(() => {
-    // Загружаем остановки с сервера
+    // Loading stops from the server
     fetch('http://127.0.0.1:8000/api/stops/')
       .then(res => res.json())
       .then(data => {
@@ -16,7 +16,7 @@ const useStops = (map) => {
   }, []);
 
   useEffect(() => {
-    // Добавляем остановки на карту
+    // Adding stops to the map
     const layerGroup = markersLayerRef.current;
     layerGroup.clearLayers();
 
