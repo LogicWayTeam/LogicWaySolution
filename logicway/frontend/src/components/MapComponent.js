@@ -9,6 +9,8 @@ import '../App.css';
 import ZoomControl from './ZoomControl';
 import useStops from './useStops';
 import { POZNAN_CENTER, redIcon } from './constants';
+import useGeocoder from './useGeocoder';
+import useRouteButton from './useRouteButton';
 
 
 const ROUTE_ENGINE_URL = 'http://127.0.0.1:8000';//delete hard code
@@ -20,76 +22,10 @@ const MapLogic = () => {
   const lastRMarkerRef = useRef(null);
   const routeLineRef = useRef(null);
 
-  const searchMarkerRef = useRef(null);
+  const searchMarkerRef = useGeocoder(map);
   const stops = useStops(map);
 
-  useEffect(() => {
-    map.setView(POZNAN_CENTER, 13);
-
-    const geocoderControl = L.Control.geocoder({
-      geocoder: L.Control.Geocoder.nominatim(),
-      placeholder: 'Enter address...',
-      defaultMarkGeocode: false,
-      position: 'topleft',
-      collapsed: false,
-    })
-    .on('markgeocode', function (e) {
-      const latlng = e.geocode.center;
-    
-      // Удаляем предыдущий маркер, если он есть
-      if (searchMarkerRef.current) {
-        map.removeLayer(searchMarkerRef.current);
-      }
-    
-      // Создаем и сохраняем новый маркер
-      const marker = L.marker(latlng, { icon: redIcon })
-        .addTo(map)
-        .bindPopup(e.geocode.name)
-        .openPopup();
-    
-      searchMarkerRef.current = marker;
-    
-      map.setView(latlng, 13);
-    })
-      .addTo(map);
-
-    // Добавим проверку, чтобы убедиться, что геокодер добавлен
-    setTimeout(() => {
-      const geocoderIcon = document.querySelector('.leaflet-control-geocoder-icon');
-      const submitButton = document.querySelector('.leaflet-control-geocoder-form button[type="submit"]');
-  
-      if (geocoderIcon && submitButton) {
-        geocoderIcon.addEventListener('click', () => {
-          console.log('Клик по иконке геокодера');
-          submitButton.click(); // переменная видна и доступна здесь
-        });
-      } else {
-        console.warn('Не найдена иконка или кнопка отправки формы');
-      }
-    }, 1000);
-    
-    
-    // route button
-    setTimeout(() => {
-      const container = document.querySelector('.leaflet-control-geocoder');
-      if (container) {
-        const routeButton = document.createElement('button');
-        routeButton.className = 'route-button';  // Класс для стилизации
-    
-        // Добавляем лупу или текст, если нужно
-        const icon = document.createElement('i');  // Добавляем иконку или текст
-        icon.className = 'fa fa-route'; // Используй класс Font Awesome для иконки маршрута
-        routeButton.appendChild(icon);
-    
-        routeButton.onclick = () => {
-          console.log('Нажата кнопка "Маршрут"');
-          // Вставь свою логику построения маршрута
-        };
-        container.appendChild(routeButton);
-      }
-    }, 0);
-
-  }, [map]);
+  useRouteButton();
 
 
   //delete
