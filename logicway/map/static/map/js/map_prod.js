@@ -222,7 +222,7 @@ function initializeMap() {
 
         startLoading();
 
-        fetch(`${ROUTE_ENGINE_URL}/geocode/geocode?address=${encodeURIComponent(address)}`)
+        fetch(`routing/proxy_route_engine/geocode/geocode?address=${encodeURIComponent(address)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Address not found');
@@ -296,7 +296,7 @@ function initializeMap() {
     clearButton.addTo(map);
 
     function reverseGeocodeLocal(lat, lon, callback) {
-        const route_engine = `${ROUTE_ENGINE_URL}/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
+        const route_engine = `routing/proxy_route_engine/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
 
         fetch(route_engine)
             .then(response => response.json())
@@ -313,7 +313,7 @@ function initializeMap() {
 
     function buildPrimitiveRoute(stops, profile, format) {
         const points = stops.map(stop => `${stop.lng},${stop.lat}`).join(';');
-        const valhallaURL = `${ROUTE_ENGINE_URL}/route/get_route?profile=${profile}&locations=${points}`;
+        const valhallaURL = `routing/proxy_route_engine/route/get_route?profile=${profile}&locations=${points}`;
 
         return fetch(valhallaURL)
             .then(response => response.json())
