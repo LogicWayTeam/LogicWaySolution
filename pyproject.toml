@@ -10,19 +10,19 @@ python = "^3.10"
 django = "^5.2"
 whitenoise = "^6.9.0"
 pytest-django = "^4.11.1"
+python-dotenv = "^1.1.0"
+django-cors-headers = "^4.7.0"
 
 [tool.poetry.group.logicway.dependencies]
 sqlalchemy = "^2.0.40"
 selenium = "^4.31.0"
 webdriver-manager = "^4.0.2"
 psycopg2-binary = "^2.9.10"
-psycopg2 = "^2.9.10"
 alembic = "^1.15.2"
 pandas = "^2.2.3"
 tqdm = "^4.67.1"
 flask = "^3.1.0"
 gitpython = "^3.1.44"
-django-cors-headers = "^4.7.0"
 networkx = "^3.4.2"
 
 [tool.poetry.group.route_engine.dependencies]
