@@ -7,11 +7,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
-django = "^5.2"
+django = "==5.2.1"
 whitenoise = "^6.9.0"
 pytest-django = "^4.11.1"
 python-dotenv = "^1.1.0"
 django-cors-headers = "^4.7.0"
+gunicorn = "^23.0.0"
+exceptiongroup = "==1.3.0"
+click = "==8.2.0"
+greenlet = "==3.2.2"
 
 [tool.poetry.group.logicway.dependencies]
 sqlalchemy = "^2.0.40"
