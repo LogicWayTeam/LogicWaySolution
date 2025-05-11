@@ -1,0 +1,57 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME:-logicway}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "${DB_NAME:-logicway}", "-U", "${DB_USER:-postgres}" ]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - logicnet
+
+  route-engine:
+    build:
+      context: .
+      dockerfile: route_engine/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8001:8001"
+    networks:
+      - logicnet
+
+  logicway:
+    build:
+      context: .
+      dockerfile: logicway/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+      - route-engine
+    environment:
+      ROUTE_ENGINE_URL: http://route-engine:8001
+      DB_NAME: ${DB_NAME:-logicway}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-postgres}
+      DB_HOST: db
+      DB_PORT: 5432
+    networks:
+      - logicnet
+
+volumes:
+  db_data:
+
+networks:
+  logicnet:

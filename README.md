@@ -32,6 +32,40 @@ DB_HOST=localhost
 DB_PORT=5432
 ```
 
+### Development and deployment with Docker Compose
+
+#### Development compose commands
+
+- Build and run the containers in detached mode: `docker compose -f docker-compose.dev.yaml up -d`
+- Just stop the containers: `docker compose -f docker-compose.dev.yaml stop`
+- Stop and remove the containers: `docker compose -f docker-compose.dev.yaml down --remove-orphans`
+- If you are deleting all containers and images, you can use the following command:
+  `
+  docker compose -f docker-compose.dev.yaml down --rmi all --volumes --remove-orphans
+  `
+
+#### Production compose commands
+
+- Build and run the containers in detached mode: `docker compose -f docker-compose.prod.yaml up -d`
+- Just stop the containers: `docker compose -f docker-compose.prod.yaml stop`
+- Stop and remove the containers: `docker compose -f docker-compose.prod.yaml down --remove-orphans`
+- If you are deleting all containers and images, you can use the following command:
+`
+docker compose -f docker-compose.prod.yaml down --rmi all --volumes --remove-orphans
+`
+
+#### Jobs
+
+Important: Ensure the database is properly initialized.
+- Run loading data job: 
+`
+docker compose -f docker-compose.dev.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
+`
+and if production:
+`
+docker compose -f docker-compose.prod.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
+`
+
 ### Production preparation and Deployment
 
 Generate requirements.txt files for each service:
