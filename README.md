@@ -32,6 +32,27 @@ DB_HOST=localhost
 DB_PORT=5432
 ```
 
+### Development and deployment with Docker Compose
+
+#### Development compose commands
+
+- Build and run the containers in detached mode: `docker-compose -f docker-compose.dev.yaml up -d`
+- Stop and remove the containers: `docker-compose -f docker-compose.dev.yaml down --remove-orphans`
+- If you are deleting all containers and images, you can use the following command:
+  `
+  docker-compose -f docker-compose.dev.yaml down --rmi all --volumes --remove-orphans
+  `
+
+#### Production compose commands
+
+- Build and run the containers in detached mode: `docker-compose -f docker-compose.prod.yaml up -d`
+- Stop and remove the containers: `docker-compose -f docker-compose.prod.yaml down --remove-orphans`
+- If you are deleting all containers and images, you can use the following command:
+`
+docker-compose -f docker-compose.prod.yaml down --rmi all --volumes --remove-orphans
+`
+
+
 ### Production preparation and Deployment
 
 Generate requirements.txt files for each service:
