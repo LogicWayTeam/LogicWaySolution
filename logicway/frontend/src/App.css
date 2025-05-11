@@ -38,6 +38,8 @@
 }
 
 .leaflet-control-geocoder {
+  position: relative; /* needed for positioning dropdown */
+  z-index: 1000;
   width: 350px;
   height: 35px;
   background: white;
@@ -48,6 +50,20 @@
   flex-direction: row-reverse;
   align-items: center;
   gap: 8px;
+}
+
+/* dropdown */
+.leaflet-control-geocoder .leaflet-control-geocoder-alternatives {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .leaflet-control-geocoder-form {

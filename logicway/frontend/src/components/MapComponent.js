@@ -11,24 +11,27 @@ import useStops from './useStops';
 import { POZNAN_CENTER, redIcon } from './constants';
 import useGeocoder from './useGeocoder';
 import useRouteButton from './useRouteButton';
+import useRouteBuilder from './useRouteBuilder';
+import { ROUTE_ENGINE_URL } from './config';
 
 
-const ROUTE_ENGINE_URL = 'http://127.0.0.1:8000';//delete hard code
 
 const MapLogic = () => {
   const map = useMap();
 
-  const lastLMarkerRef = useRef(null);
-  const lastRMarkerRef = useRef(null);
-  const routeLineRef = useRef(null);
+  //const lastLMarkerRef = useRef(null);
+  //const lastRMarkerRef = useRef(null);
+  //const routeLineRef = useRef(null);
 
   const searchMarkerRef = useGeocoder(map);
   const stops = useStops(map);
 
   useRouteButton();
+  useRouteBuilder(map, ROUTE_ENGINE_URL);
 
 
   //delete
+  /*
   function reverseGeocodeLocal(lat, lon, callback) {
     const route_engine = `${ROUTE_ENGINE_URL}/geocode/reverse_geocode?lat=${lat}&lon=${lon}`;
 
@@ -135,6 +138,7 @@ const MapLogic = () => {
       map.off('contextmenu', handleContextMenu);
     };
   }, [map]);
+  */
   //delete
 
   return null;

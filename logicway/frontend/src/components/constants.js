@@ -1,7 +1,5 @@
 import L from 'leaflet';
 
-export const ROUTE_ENGINE_URL = 'http://127.0.0.1:8000'; //delete hard code
-
 export const POZNAN_CENTER = [52.406376, 16.925167];
 
 export const redIcon = L.icon({
