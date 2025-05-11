@@ -15,5 +15,5 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/route_engine
-EXPOSE 8000
+EXPOSE 8001
 CMD ["poetry", "run", "gunicorn", "route_engine.wsgi:application", "--bind", "0.0.0.0:8001"]
