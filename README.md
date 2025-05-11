@@ -63,7 +63,7 @@ docker compose -f docker-compose.dev.yaml run logicway sh -c "INTERNAL=1 poetry 
 `
 and if production:
 `
-docker compose -f docker-compose.dev.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
+docker compose -f docker-compose.prod.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
 `
 
 ### Production preparation and Deployment
