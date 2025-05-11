@@ -6,7 +6,7 @@ WORKDIR /app
 
 COPY ./pyproject.toml ./poetry.lock ./
 RUN pip install poetry
-RUN poetry lock &&  poetry install --no-root --only main,route_engine --no-cache
+RUN poetry lock && poetry install --no-root --only main,route_engine --no-cache
 
 COPY ./route_engine ./route_engine
 
