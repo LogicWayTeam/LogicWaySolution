@@ -2,38 +2,11 @@
 
 https://www.jetbrains.com/help/pycharm/poetry.html
 
-### Create the PostgreSQL Database
+### Install Dependencies
 
-To set up your PostgreSQL database:
-
-- Log into PostgreSQL:
-
-``` bash
-psql -U postgres
-```
-
-- Create a new user and password (replace username and password with your values):
-
-``` sql
-CREATE USER myuser WITH PASSWORD 'mypassword';
-```
-- Create the database:
-
-``` sql
-CREATE DATABASE logic_way_db;
-```
-
-- Grant privileges to the user:
-
-``` sql
-GRANT ALL PRIVILEGES ON DATABASE logic_way_db TO myuser;
-```
-
-- Exit the PostgreSQL prompt:
-
-``` bash
-\q
-```
+- To install all dependencies: `poetry install`
+- Install only for logicway service: `poetry install --with logicway`
+- Install only for route_engine service: `poetry install --with route_engine`
 
 #### To create new SECRET_KEY for Django
 
@@ -57,4 +30,12 @@ DB_USER=myuser
 DB_PASSWORD=mypassword
 DB_HOST=localhost
 DB_PORT=5432
+```
+
+### Production preparation and Deployment
+
+Generate requirements.txt files for each service:
+``` bash
+poetry export --with logicway --without-hashes -f requirements.txt -o logicway/requirements.txt
+poetry export --with route_engine --without-hashes -f requirements.txt -o route_engine/requirements.txt
 ```

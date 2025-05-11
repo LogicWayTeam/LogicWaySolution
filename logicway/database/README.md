@@ -10,6 +10,12 @@ or push using SSH
 SSH=1 python upload_data.py
 ```
 
+To upload data to the internal storage, use the following command:
+
+```bash
+INTERNAL=1 python upload_data.py
+```
+
 ### Load Data to Database
 
 ```bash

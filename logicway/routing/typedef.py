@@ -4,6 +4,14 @@ from datetime import time
 from math import radians, sin, cos, asin, sqrt
 
 class BaseRouteBuilder(ABC):
+    @staticmethod
+    def get_walking_route(start_lat, start_lon, end_lat, end_lon):
+        return [RouteSegment(
+            type='walking',
+            from_stop=Point(lat=start_lat, lon=start_lon),
+            to_stop=Point(lat=end_lat, lon=end_lon)
+        )]
+
     def haversine_distance(self, lat1, lon1, lat2, lon2): #km
         earth_radius = 6371 # km
         lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
