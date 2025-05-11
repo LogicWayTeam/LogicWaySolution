@@ -56,7 +56,7 @@ docker compose -f docker-compose.prod.yaml down --rmi all --volumes --remove-orp
 
 #### Jobs
 
-!!! Obligatory for database !!!
+Important: Ensure the database is properly initialized.
 - Run loading data job: 
 `
 docker compose -f docker-compose.dev.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
