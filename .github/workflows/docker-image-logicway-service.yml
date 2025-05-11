@@ -36,7 +36,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/logicwaysolution/logicway
+          images: ghcr.io/${{ github.repository_owner }}/logicway
           tags: |
             type=raw,value=${{ github.event.inputs.image_version }}
 
