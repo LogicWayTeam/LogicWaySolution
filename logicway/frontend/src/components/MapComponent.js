@@ -13,6 +13,7 @@ import useGeocoder from './useGeocoder';
 import useRouteButton from './useRouteButton';
 import useRouteBuilder from './useRouteBuilder';
 import { ROUTE_ENGINE_URL } from './config';
+import RouteControlContainer from './RouteControlContainer';
 
 
 
@@ -26,7 +27,7 @@ const MapLogic = () => {
   const searchMarkerRef = useGeocoder(map);
   const stops = useStops(map);
 
-  useRouteButton();
+  //useRouteButton();
   useRouteBuilder(map, ROUTE_ENGINE_URL);
 
 
@@ -157,6 +158,7 @@ const MapComponent = () => {
         attribution="&copy; OpenStreetMap contributors"
       />
       <ZoomControl />
+      <RouteControlContainer />
       <MapLogic />
     </MapContainer>
   );

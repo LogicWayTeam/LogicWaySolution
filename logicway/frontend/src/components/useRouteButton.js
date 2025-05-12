@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const useRouteButton = () => {
+const useRouteButton = (onClick) => {
   useEffect(() => {
     setTimeout(() => {
       const container = document.querySelector('.leaflet-control-geocoder');
@@ -11,15 +11,18 @@ const useRouteButton = () => {
         const icon = document.createElement('i');
         icon.className = 'fa fa-route';
         routeButton.appendChild(icon);
+
+        routeButton.onclick = onClick;
+        container.appendChild(routeButton);
  
         routeButton.onclick = () => {
           console.log('Нажата кнопка "Маршрут"');
-          // Вставьте свою логику построения маршрута
+          if (onClick) onClick(); // вызываем переданную функцию
         };
-        container.appendChild(routeButton);
+        
       }
     }, 0);
-  }, []);
+  }, [onClick]);
 };
 
 export default useRouteButton;
