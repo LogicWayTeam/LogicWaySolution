@@ -18,22 +18,16 @@ services:
       - logicnet
 
   route-engine:
-    build:
-      context: .
-      dockerfile: route_engine/Dockerfile
+    image: ghcr.io/logicwayteam/route-engine:latest
     env_file:
       - .env
-    environment:
-      DJANGO_SETTINGS_MODULE: route_engine.settings.dev
     ports:
       - "8001:8001"
     networks:
       - logicnet
 
   logicway:
-    build:
-      context: .
-      dockerfile: logicway/Dockerfile
+    image: ghcr.io/logicwayteam/logicway:latest
     env_file:
       - .env
     ports:
@@ -42,7 +36,6 @@ services:
       - db
       - route-engine
     environment:
-      DJANGO_SETTINGS_MODULE: logicway.settings.dev
       ROUTE_ENGINE_URL: http://route-engine:8001
       DB_NAME: ${DB_NAME:-logicway}
       DB_USER: ${DB_USER:-postgres}

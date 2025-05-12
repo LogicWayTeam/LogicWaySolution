@@ -54,6 +54,16 @@ DB_PORT=5432
 docker compose -f docker-compose.prod.yaml down --rmi all --volumes --remove-orphans
 `
 
+#### Production compose (images form GitHub Container Registry)
+
+- Build and run the containers in detached mode: `docker compose -f docker-compose.ghcr.yaml up -d`
+- Just stop the containers: `docker compose -f docker-compose.ghcr.yaml stop`
+- Stop and remove the containers: `docker compose -f docker-compose.ghcr.yaml down --remove-orphans`
+- If you are deleting all containers and images, you can use the following command:
+  `
+  docker compose -f docker-compose.ghcr.yaml down --rmi all --volumes --remove-orphans
+  `
+
 #### Jobs
 
 Important: Ensure the database is properly initialized.

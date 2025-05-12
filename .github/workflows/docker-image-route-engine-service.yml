@@ -7,6 +7,11 @@ on:
         description: 'Image version/tag (e.g. 1.0.0, latest, or specific SHA commit)'
         required: true
         default: 'latest'
+      set_as_latest:
+        description: 'Tag this image with “latest” as well?'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build-and-push:
@@ -39,6 +44,7 @@ jobs:
           images: ghcr.io/${{ github.repository_owner }}/route-engine
           tags: |
             type=raw,value=${{ github.event.inputs.image_version }}
+            type=raw,value=latest,enable=${{ github.event.inputs.set_as_latest == true }}
 
       - name: Build and push Docker image to GHCR
         uses: docker/build-push-action@v5
