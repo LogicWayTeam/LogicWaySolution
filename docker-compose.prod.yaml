@@ -40,6 +40,7 @@ services:
       - db
       - route-engine
     environment:
+      DJANGO_SETTINGS_MODULE: logicway.settings.prod
       ROUTE_ENGINE_URL: http://route-engine:8001
       DB_NAME: ${DB_NAME:-logicway}
       DB_USER: ${DB_USER:-postgres}

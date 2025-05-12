@@ -71,9 +71,13 @@ Important: Ensure the database is properly initialized.
 `
 docker compose -f docker-compose.dev.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
 `
-and if production:
+- if production:
 `
 docker compose -f docker-compose.prod.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
+`
+- if production with GitHub Container Registry:
+`
+docker compose -f docker-compose.ghcr.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
 `
 
 ### Production preparation and Deployment
