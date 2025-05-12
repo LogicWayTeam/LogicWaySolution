@@ -3,7 +3,7 @@ import pandas as pd
 from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.exc import SQLAlchemyError
-from models import Base, Agency, Calendar, Routes, Shapes, Stops, StopTimes, Trips  # Убедитесь, что модели импортированы правильно
+from models import Base, Agency, Calendar, Routes, Shapes, Stops, StopTimes, Trips
 from tqdm import tqdm
 from datetime import datetime
 from dotenv import load_dotenv

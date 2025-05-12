@@ -21,6 +21,8 @@ services:
     image: ghcr.io/logicwayteam/route-engine:latest
     env_file:
       - .env
+    environment:
+      DJANGO_SETTINGS_MODULE: route_engine.settings.prod
     ports:
       - "8001:8001"
     networks:
@@ -36,6 +38,7 @@ services:
       - db
       - route-engine
     environment:
+      DJANGO_SETTINGS_MODULE: logicway.settings.prod
       ROUTE_ENGINE_URL: http://route-engine:8001
       DB_NAME: ${DB_NAME:-logicway}
       DB_USER: ${DB_USER:-postgres}

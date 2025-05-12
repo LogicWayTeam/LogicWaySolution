@@ -21,5 +21,10 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app/logicway
+
+ENV APP_BUILD_PHASE=1
+RUN poetry run python manage.py collectstatic --noinput
+ENV APP_BUILD_PHASE=0
+
 EXPOSE 8000
 CMD ["poetry", "run", "gunicorn", "logicway.wsgi:application", "--bind", "0.0.0.0:8000"]
