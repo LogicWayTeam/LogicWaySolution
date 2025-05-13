@@ -95,26 +95,34 @@ const RouteInputForm = ({ onRouteSubmit }) => {
         borderRadius: '20px',
       }}
     >
+      {/* Vertical Container */}
       <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {/* From Field */}
-        <InputWithIcon
-          icon={<CircleIcon sx={{ color: 'black', fontSize: 13 }} />}
-          label="From"
-          value={origin}
-          onChange={(e) => setOrigin(e.target.value)}
-        />
+        {/* Horizontal Container */}
+        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1 }}>
+          {/* Left column */}
+          <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <InputWithIcon
+              icon={<CircleIcon sx={{ color: 'black', fontSize: 13 }} />}
+              label="From"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+            />
+            <InputWithIcon
+              icon={<FlagIcon sx={{ color: '#c40035', fontSize: 20 }} />}
+              label="To"
+              value={destination}
+              onChange={(e) => setDestination(e.target.value)}
+            />
+          </Box>
 
-        {/* To Field */}
-        <InputWithIcon
-          icon={<FlagIcon sx={{ color: '#c40035', fontSize: 20 }} />}
-          label="To"
-          value={destination}
-          onChange={(e) => setDestination(e.target.value)}
-        />
-
-        <SwapButton onClick={handleSwap} />
+          {/* Right column */}
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <SwapButton onClick={handleSwap} />
+          </Box>
+        </Box>
+        
         <SubmitButton />
-      </Box>
+      </Box>     
     </Paper>
   );
 };
