@@ -37,6 +37,10 @@
   }
 }
 
+.map-container.blocked {
+  pointer-events: none;
+}
+
 .leaflet-control-geocoder {
   position: relative; /* needed for positioning dropdown */
   z-index: 1000;

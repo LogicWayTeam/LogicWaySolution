@@ -8,6 +8,20 @@ import CloseIcon from '@mui/icons-material/Close';
 const inputStyles = {
   flex: 1,
   ml: 3,
+  input: {
+    color: '#393939',
+    borderRadius: '8px',
+    padding: '6px 8px',
+    backgroundColor: '#fff',
+  },
+  '& input:-webkit-autofill': {
+  WebkitBoxShadow: '0 0 0 1000px #ffffff inset',
+  WebkitTextFillColor: 'black',
+  transition: 'background-color 0s ease-in-out 0s',
+  },
+  '& input:-webkit-autofill:focus': {
+  WebkitBoxShadow: '0 0 0 1000px #e8f5e9 inset',
+  },
 };
 
 const paperStyles = {
@@ -54,8 +68,6 @@ const RouteButton = ({ onClick }) => (
   </IconButton>
 );
 
-
-
 const SearchButton = ({ onClick } ) => (
   <IconButton onClick={onClick} sx={{ color: '#666' }}>
     <SearchIcon />
@@ -63,36 +75,57 @@ const SearchButton = ({ onClick } ) => (
 );
 
 const QueryInput = ({ value, onChange, onClear }) => (
-  <TextField
-    placeholder="Search for a place"
-    variant="standard"
-    value={value}
-    onChange={onChange}
+  <Box
     sx={{
       ...inputStyles,
-      input: { color: '#393939' },
-      '& .MuiInputBase-input::placeholder': {
-        color: '#666',
-        opacity: 1,
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      '&:hover .clear-btn, &:focus-within .clear-btn': {
+        visibility: 'visible',
       },
     }}
-    InputProps={{
-      disableUnderline: true,
-      endAdornment: value && (
-        <IconButton
-          onClick={onClear}
-          size="small"
-          sx={{
-            visibility: value ? 'visible' : 'hidden',
-            color: '#c23057',
-            padding: '4px',
-          }}
-        >
-          <CloseIcon fontSize="inherit" />
-        </IconButton>
-      ),
-    }}
-  />
+  >
+    <TextField
+      placeholder="Search for a place"
+      variant="standard"
+      value={value}
+      onChange={onChange}
+      sx={{
+        flex: 1,
+        input: { color: 'black' },
+        '& .MuiInputBase-input::placeholder': {
+          color: '#666',
+          opacity: 1,
+        },
+      }}
+      InputProps={{
+        disableUnderline: true,
+      }}
+      fullWidth
+    />
+
+    {value && (
+      <IconButton
+        onClick={onClear}
+        size="small"
+        className="clear-btn"
+        sx={{
+          visibility: 'hidden',
+          color: '#999',
+          position: 'absolute',
+          right: 0,
+          mr: 1,
+          padding: '4px',
+          '&:hover': {
+            backgroundColor: 'transparent',
+          },
+        }}
+      >
+        <CloseIcon fontSize="inherit" />
+      </IconButton>
+    )}
+  </Box>
 );
 
 
