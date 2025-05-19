@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Box, Button, TextField, Typography, Paper, IconButton } from '@mui/material';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import CircleIcon from '@mui/icons-material/Circle';
 import FlagIcon from '@mui/icons-material/Flag';
+import CloseIcon from '@mui/icons-material/Close';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 
 // TextField Styles
 const inputStyles = {
@@ -13,19 +15,34 @@ const inputStyles = {
     '&.Mui-focused fieldset': {
       borderColor: '#45a049',
     },
+    '&:hover .location-icon': {
+      opacity: 1,
+    },
+    '&.Mui-focused .location-icon': {
+      opacity: 1,
+    },
   },
   '& input:-webkit-autofill': {
-    WebkitBoxShadow: '0 0 0 1000px #ffffff inset',
-    WebkitTextFillColor: 'black',
+    WebkitBoxShadow: '0 0 0 1000px white inset !important',
+    WebkitTextFillColor: '#000',
     transition: 'background-color 0s ease-in-out 0s',
+    caretColor: '#000',
   },
   '& input:-webkit-autofill:focus': {
-    WebkitBoxShadow: '0 0 0 1000px #e8f5e9 inset',
+    WebkitBoxShadow: '0 0 0 1000px white inset !important',
   },
+
 };
 
 // Input field with icon
-const InputWithIcon = ({ icon, label, value, onChange }) => (
+const InputWithIcon = ({ icon, label, value, onChange, onLocateClick }) => {
+  const inputRef = useRef();
+
+  const handleFocus = () => {
+    inputRef.current?.select();
+  };
+
+  return(
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
     <Box sx={{ width: 24, height: 24, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       {icon}
@@ -35,10 +52,35 @@ const InputWithIcon = ({ icon, label, value, onChange }) => (
       variant="outlined"
       value={value}
       onChange={onChange}
+      onFocus={handleFocus}
+      inputRef={inputRef}
       fullWidth
       sx={inputStyles}
+      InputProps={{
+        endAdornment: (
+          <LocationButton onClick={onLocateClick} />
+        ),
+      }}
     />
   </Box>
+  );
+};
+
+// Location Button
+const LocationButton = ({ onClick }) => (
+  <IconButton
+    onClick={onClick}
+    size="small"
+    className="location-icon"
+    sx={{
+      opacity: 0,
+      transition: 'opacity 0.2s ease',
+      color: '#45a049',
+      padding: '4px',
+    }}
+  >
+    <MyLocationIcon fontSize="small" />
+  </IconButton>
 );
 
 // Swap Button
@@ -56,6 +98,7 @@ const SubmitButton = () => (
     type="submit"
     variant="contained"
     sx={{
+      flex: 1,
       backgroundColor: '#4caf50',
       '&:hover': {
         backgroundColor: '#45a049',
@@ -66,7 +109,38 @@ const SubmitButton = () => (
   </Button>
 );
 
-const RouteInputForm = ({ onRouteSubmit }) => {
+// Close Button
+const CloseButton = ({ onClick }) => (
+  <IconButton
+    onClick={onClick}
+    disableRipple
+    disableFocusRipple
+    sx={{
+      ml: 1,
+      backgroundColor: '#ccc',
+      opacity: 0,
+      color: '#fff',
+      borderRadius: '6px',
+      flexShrink: 0,
+      transition: 'all 0.2s ease',
+      '&:hover': {
+        backgroundColor: '#ccc',
+        opacity: 1,
+      },
+      '&:active': {
+        backgroundColor: '#aaa',
+        opacity: 1,
+        borderColor: '#aaa',
+        transform: 'scale(0.97)',
+      },
+    }}
+  >
+    <CloseIcon fontSize="small" />
+  </IconButton>
+);
+
+
+const RouteInputForm = ({ onRouteSubmit, onClose }) => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
 
@@ -87,7 +161,7 @@ const RouteInputForm = ({ onRouteSubmit }) => {
       elevation={4}
       sx={{
         position: 'absolute',
-        top: 80,
+        top: 12,
         left: 12,
         zIndex: 1000,
         p: 2,
@@ -120,8 +194,11 @@ const RouteInputForm = ({ onRouteSubmit }) => {
             <SwapButton onClick={handleSwap} />
           </Box>
         </Box>
-        
-        <SubmitButton />
+
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', '&:hover .close-btn': {opacity: 1,}, }}>
+          <SubmitButton />
+          <CloseButton onClick={onClose} />
+        </Box>
       </Box>     
     </Paper>
   );

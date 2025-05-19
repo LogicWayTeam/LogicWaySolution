@@ -37,6 +37,14 @@
   }
 }
 
+input::selection {
+  background-color: #a5d6a7 !important;
+}
+
+textarea::selection {
+  background-color: #a5d6a7 !important;
+}
+
 .map-container.blocked {
   pointer-events: none;
 }

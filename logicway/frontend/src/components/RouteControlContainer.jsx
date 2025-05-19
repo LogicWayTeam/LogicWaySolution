@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
-import useRouteButton from './useRouteButton';
 import RouteInputForm from './RouteInputForm';
+import GeocoderSearchBar from './GeocoderSearchBar';
 
 const RouteControlContainer = () => {
   const [showForm, setShowForm] = useState(false);
-
-  // Передаём функцию в хук, чтобы он показал форму
-  useRouteButton(() => setShowForm(true));
 
   const handleRouteSubmit = (origin, destination) => {
     console.log('Маршрут от:', origin, 'до:', destination);
@@ -14,13 +11,19 @@ const RouteControlContainer = () => {
   };
 
   return (
-    <div>
+    <>
       {showForm ? (
-        <RouteInputForm onSubmit={handleRouteSubmit} />
+        <RouteInputForm
+          onSubmit={handleRouteSubmit}
+          onClose={() => setShowForm(false)} 
+        />
       ) : (
-        null // здесь может быть геокодер по умолчанию, если нужен
+        <GeocoderSearchBar
+          onSearchClick={(place) => console.log('Искать:', place)}
+          onRouteClick={() => setShowForm(true)} 
+        />
       )}
-    </div>
+    </>
   );
 };
 

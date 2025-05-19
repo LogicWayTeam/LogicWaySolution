@@ -14,7 +14,7 @@ import useRouteButton from './useRouteButton';
 import useRouteBuilder from './useRouteBuilder';
 import { ROUTE_ENGINE_URL } from './config';
 import RouteControlContainer from './RouteControlContainer';
-import GeocoderInput from './GeocoderSearchBar';
+import GeocoderSearchBar from './GeocoderSearchBar';
 
 
 
@@ -160,11 +160,6 @@ const MapComponent = () => {
       />
       <ZoomControl />
       <RouteControlContainer />
-      <GeocoderInput 
-  onSearchClick={(placeName) => console.log('Искать:', placeName)} 
-  onRouteClick={() => console.log('Показать форму маршрута')}
-/>
-
       <MapLogic />
     </MapContainer>
   );

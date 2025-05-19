@@ -35,8 +35,8 @@ const paperStyles = {
 
 const wrapperStyles = {
   position: 'absolute',
-  top: 20,
-  right: 20,
+  top: 12,
+  left: 12,
   zIndex: 1000,
   width: 400,
 };
@@ -131,7 +131,7 @@ const QueryInput = ({ value, onChange, onClear }) => (
 
 // === Main component ===
 
-const GeocoderInput = ({ onSearchClick, onRouteClick }) => {
+const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
   const [query, setQuery] = useState('');
   const [suggestions, setSuggestions] = useState([]);
 
@@ -188,4 +188,4 @@ const GeocoderInput = ({ onSearchClick, onRouteClick }) => {
   );
 };
 
-export default GeocoderInput;
+export default GeocoderSearchBar;

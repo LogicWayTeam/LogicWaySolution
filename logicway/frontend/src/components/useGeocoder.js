@@ -10,7 +10,7 @@ const useGeocoder = (map) => {
       geocoder: L.Control.Geocoder.nominatim(),
       placeholder: 'Enter address...',
       defaultMarkGeocode: false,
-      position: 'topleft',
+      position: 'topright',
       collapsed: false,
     })
       .on('markgeocode', function (e) {
