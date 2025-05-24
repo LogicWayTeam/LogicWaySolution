@@ -1,3 +1,4 @@
+import { LOGICWAY_URL } from './config';
 import { useEffect, useState, useRef } from 'react';
 import L from 'leaflet';
 
@@ -7,7 +8,7 @@ const useStops = (map) => {
 
   useEffect(() => {
     // Loading stops from the server
-    fetch('http://127.0.0.1:8000/api/stops/')
+    fetch(`${LOGICWAY_URL}/api/stops/`)
       .then(res => res.json())
       .then(data => {
         setStops(data);
