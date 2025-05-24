@@ -1,11 +1,57 @@
-# .gitignore
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
 
-# Ignore node_modules
+# Virtual environment
+venv/
 .env
+*.env
+
+# Django specific
+db.sqlite3
+*.sqlite3
+*.db
+*.bak
+*.dump
+
+# Migrations (опционально, если не хочешь версионировать)
+**/migrations/__pycache__/
+**/migrations/*.pyc
+# **/migrations/ можно добавить, если генерируешь их автоматически
+
+# IDE
+.idea/
+.vscode/
+
+# Pytest
+htmlcov/
+.coverage
+.tox/
+pytest_cache/
+.cache/
+
+# Static/media files (если генерируются)
+staticfiles/
+media/
+static/
+
+# MyPy
+.mypy_cache/
+
+# Alembic
 alembic.ini
 
-# database tmp data
+# Logs and local data
+*.log
+*.pot
+*.mo
+
+# Local database or data files
 logicway/database/data/
 
-# internal idea files
-.idea/
+# System files
+.DS_Store
+Thumbs.db

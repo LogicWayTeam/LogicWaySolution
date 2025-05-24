@@ -77,8 +77,9 @@ def download_from_internal_storage():
         print("Data from internal storage has been cloned.")
     else:
         repo = git.Repo(base_dir)
-        repo.remotes.origin.pull()
-        print("Data from internal storage has been updated.")
+        if repo.remotes.origin:
+            repo.remotes.origin.fetch(prune=True)
+            print("Data from internal storage has been updated.")
 
     return repo
 
@@ -117,4 +118,7 @@ def delete_zip():
 
 
 if __name__ == "__main__":
-    update_internal_storage()
+    if os.getenv("INTERNAL") == "1":
+        download_from_internal_storage()
+    else:
+        update_internal_storage()

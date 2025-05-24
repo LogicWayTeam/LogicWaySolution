@@ -24,7 +24,7 @@ def get_stops(request):
         session.close()
 
 
-def get_stop(request, stop_name):
+def get_stop_data(stop_name):
     session = SessionLocal()
 
     try:
@@ -32,11 +32,19 @@ def get_stop(request, stop_name):
 
         if stop:
             stop_data = stop.to_dict()
-            return JsonResponse(stop_data, safe=False)
+            return stop_data
         else:
-            return JsonResponse({'error': 'Stop not found'}, status=404)
+            return None
     finally:
         session.close()
+
+
+def get_stop(request, stop_name):
+    stop_data = get_stop_data(stop_name)
+    if stop_data:
+        return JsonResponse(stop_data, safe=False)
+    else:
+        return JsonResponse({'error': 'Stop not found'}, status=404)
 
 
 def clean_string(text):
@@ -51,7 +59,7 @@ def clean_string(text):
     return text
 
 
-def get_route(request, route_id, direction):
+def get_route_data(route_id, direction):
     with SessionLocal() as session:
         try:
             route = session.query(Routes).get(route_id)
@@ -61,6 +69,18 @@ def get_route(request, route_id, direction):
 
             cleaned_route_desc_arr = f1_clean_route_desc.split(' - ')
 
-            return JsonResponse(cleaned_route_desc_arr, safe=False)
+            return cleaned_route_desc_arr
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return None
+
+
+def get_route(request, route_id, direction):
+    route_stops_name = get_route_data(route_id, direction)
+    if route_stops_name:
+        return JsonResponse(
+            route_stops_name,
+            safe=False,
+            json_dumps_params={'ensure_ascii': False}
+        )
+    else:
+        return JsonResponse({'error': 'Route description not found.'}, status=500)
