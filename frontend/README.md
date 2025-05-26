@@ -6,7 +6,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ```
 # .env
-REACT_APP_LOGICWAY_URL=http://127.0.0.1:8000
+REACT_APP_LOGICWAY_URL=http://localhost:8000
+REACT_APP_ROUTE_ENGINE_URL=http://localhost:8001
 ```
 
 ## Available Scripts
