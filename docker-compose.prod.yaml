@@ -55,8 +55,8 @@ services:
       context: .
       dockerfile: frontend/Dockerfile
     environment:
-      REACT_APP_LOGICWAY_URL: http://localhost:8000
-      REACT_APP_ROUTE_ENGINE_URL: http://localhost:8001
+      REACT_APP_LOGICWAY_URL: ${LOGICWAY_URL:-http://localhost:8000}
+      REACT_APP_ROUTE_ENGINE_URL: ${ROUTE_ENGINE_URL:-http://localhost:8000/routing/proxy_route_engine}
     ports:
       - "3000:80"
     depends_on:
