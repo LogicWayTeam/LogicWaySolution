@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  DB_NAME: "logicway"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  ROUTE_ENGINE_URL: "http://route-engine:8001"

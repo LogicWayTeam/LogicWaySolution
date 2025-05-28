@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+spec:
+  selector:
+    app: postgres         # Must match labels in deployment
+  ports:
+    - protocol: TCP
+      port: 5432          # The port on which the service will accept requests
+      targetPort: 5432    # Port inside the PostgreSQL container
+  type: ClusterIP         # Service for internal use only

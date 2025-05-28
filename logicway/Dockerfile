@@ -15,6 +15,9 @@ RUN pip install poetry
 RUN poetry lock && poetry install --no-root --only main,logicway --no-cache
 
 COPY ./logicway ./logicway
+# IMPORTANT: Build from project root
+# docker build -f logicway/Dockerfile -t logicway:latest .
+
 
 ENV DJANGO_SETTINGS_MODULE=logicway.settings.prod
 ENV PYTHONDONTWRITEBYTECODE=1
