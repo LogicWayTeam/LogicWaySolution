@@ -4,10 +4,9 @@ metadata:
   name: logicway
 spec:
   selector:
-    app: logicway             # Має збігатися з labels у deployment
+    app: logicway
   ports:
     - protocol: TCP
-      port: 8000              # Порт всередині кластеру
-      targetPort: 8000        # Порт у контейнері
-      nodePort: 30001         # Порт на хості (можна опустити — буде автоматичний)
-  type: NodePort              # Дає змогу заходити з браузера (через IP minikube:port)
+      port: 8000
+      targetPort: 8000
+  type: ClusterIP
