@@ -31,6 +31,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '0.0.0.0',
     'logicway',
+    '192.168.49.2',
 ]
 
 CORS_ALLOWED_ORIGINS = [
