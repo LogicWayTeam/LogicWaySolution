@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: route-engine
-          image: ghcr.io/logicwayteam/logicway:001  # або ghcr.io/logicwayteam/route-engine:latest
+          image: ghcr.io/logicwayteam/route-engine:001
           ports:
             - containerPort: 8001
           env:

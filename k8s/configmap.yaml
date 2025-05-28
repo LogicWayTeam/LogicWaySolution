@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: app-config
 data:
-  DB_NAME: "logic"
-  DB_HOST: "100.92.150.91"                  # це має збігатись із назвою postgres service
-  DB_PORT: "5432"                     # лапки — бо це рядок
-  ROUTE_ENGINE_URL: "http://100.92.150.91:8001"
+  DB_NAME: "logicway"
+  DB_HOST: "postgres"
+  DB_PORT: "5432"
+  ROUTE_ENGINE_URL: "http://route-engine:8001"

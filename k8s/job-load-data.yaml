@@ -7,12 +7,12 @@ spec:
     spec:
       containers:
         - name: job-load
-          image: ghcr.io/logicwayteam/logicway:001  # або образ із GHCR
-          command: ["poetry", "run", "python", "manage.py", "loaddata", "initial_data.json"]
-          envFrom:
-            - configMapRef:
-                name: app-config
-            - secretRef:
-                name: app-secret
+          image: ghcr.io/logicwayteam/logicway:001
+          env:
+            - name: INTERNAL
+              value: "1"
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - "poetry run python database/upload_data.py && poetry run python database/load_data.py"
       restartPolicy: Never
   backoffLimit: 1

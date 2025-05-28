@@ -14,42 +14,44 @@ spec:
     spec:
       containers:
         - name: logicway
-          image: ghcr.io/logicwayteam/logicway:001         # 🔧 Заміни на реальний образ (DockerHub/GHCR)
+          image: ghcr.io/logicwayteam/logicway:001
           ports:
-            - containerPort: 8000               # Локальний порт, який слухає Django — залишаємо
+            - containerPort: 8000
           env:
+            - name: DJANGO_SETTINGS_MODULE
+              value: logicway.settings.prod
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: app-secret
-                  key: SECRET_KEY   # 🔧 Має бути в `secret.yaml`
+                  key: SECRET_KEY
             - name: DB_NAME
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: logicway                 # 🔧 Має бути в `configmap.yaml`
+                  key: DB_NAME
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
                   name: app-secret
-                  key: DB_USER              # 🔧 Має бути в `secret.yaml`
+                  key: DB_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: app-secret
-                  key: DB_PASSWORD             # 🔧 Має бути в `secret.yaml`
+                  key: DB_PASSWORD
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: DB_HOST                 # 🔧 Має бути в `configmap.yaml`
+                  key: DB_HOST
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: DB_PORT               # 🔧 Має бути в `configmap.yaml`
+                  key: DB_PORT
             - name: ROUTE_ENGINE_URL
               valueFrom:
                 configMapKeyRef:
                   name: app-config
-                  key: ROUTE_ENGINE_URL        # 🔧 Має бути в `configmap.yaml`
+                  key: ROUTE_ENGINE_URL

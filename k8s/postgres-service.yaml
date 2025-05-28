@@ -4,9 +4,9 @@ metadata:
   name: postgres
 spec:
   selector:
-    app: postgres         # Має збігатися з labels у deployment
+    app: postgres         # Must match labels in deployment
   ports:
     - protocol: TCP
-      port: 5432          # Порт, на якому сервіс буде приймати запити
-      targetPort: 5432    # Порт всередині контейнера PostgreSQL
-  type: ClusterIP         # Сервіс тільки для внутрішнього використання
+      port: 5432          # The port on which the service will accept requests
+      targetPort: 5432    # Port inside the PostgreSQL container
+  type: ClusterIP         # Service for internal use only
