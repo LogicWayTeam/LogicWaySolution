@@ -12,6 +12,11 @@ spec:
             - name: INTERNAL
               value: "1"
           command: [ "/bin/sh", "-c" ]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
           args:
             - "poetry run python database/upload_data.py && poetry run python database/load_data.py"
       restartPolicy: Never
