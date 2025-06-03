@@ -15,6 +15,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
     if (!map) return;
 
     const handleClick = async (e) => {
+      e.originalEvent.preventDefault();
       const address = await reverseGeocodeLocal(e.latlng.lat, e.latlng.lng, ROUTE_ENGINE_URL);
 
       if (lastLMarkerRef.current) {
@@ -27,14 +28,21 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         .openPopup();
 
       if (lastLMarkerRef.current && lastRMarkerRef.current) {
-        buildRoute(map, [
-          lastLMarkerRef.current.getLatLng(),
-          lastRMarkerRef.current.getLatLng()
-        ], ROUTE_ENGINE_URL, routeLayerRef);
+        buildRoute(
+          map,
+          [
+            lastLMarkerRef.current.getLatLng(),
+            lastRMarkerRef.current.getLatLng()
+          ],
+          routeLayerRef,       // Слой маршрута
+          'pedestrian',        // Профиль (пешеход, авто и т.п.)
+          'red'                // Цвет линии (необязательно)
+        );
       }
     };
 
     const handleRightClick = async (e) => {
+      e.originalEvent.preventDefault();
       const address = await reverseGeocodeLocal(e.latlng.lat, e.latlng.lng, ROUTE_ENGINE_URL);
 
       if (lastRMarkerRef.current) {
@@ -47,10 +55,16 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         .openPopup();
 
       if (lastLMarkerRef.current && lastRMarkerRef.current) {
-        buildRoute(map, [
-          lastLMarkerRef.current.getLatLng(),
-          lastRMarkerRef.current.getLatLng()
-        ], ROUTE_ENGINE_URL, routeLayerRef);
+        buildRoute(
+          map,
+          [
+            lastLMarkerRef.current.getLatLng(),
+            lastRMarkerRef.current.getLatLng()
+          ],
+          routeLayerRef,       // Слой маршрута
+          'pedestrian',        // Профиль (пешеход, авто и т.п.)
+          'red'                // Цвет линии (необязательно)
+        );
       }
     };
 

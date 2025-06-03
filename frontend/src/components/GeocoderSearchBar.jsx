@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useRef, useEffect } from 'react';
+import L from 'leaflet';
 import { Box, TextField, IconButton, Paper, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RouteIcon from '@mui/icons-material/AltRoute';
 import CloseIcon from '@mui/icons-material/Close';
+import { redIcon } from './constants';
 
 // === Styles ===
 const inputStyles = {
@@ -131,40 +134,75 @@ const QueryInput = ({ value, onChange, onClear }) => (
 
 // === Main component ===
 
-const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
+const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
+  // const [suggestions, setSuggestions] = useState([]); // Подсказки временно отключены
+  const searchMarkerRef = useRef(null);
 
-  const fetchSuggestions = async (text) => {
-    if (!text) return setSuggestions([]);
+  // const fetchSuggestions = async (text) => {
+  //   if (!text) return setSuggestions([]);
+  //
+  //   try {
+  //     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&limit=5`);
+  //     const data = await response.json();
+  //
+  //     const formatted = data.map((item) => ({
+  //       place_name: item.display_name,
+  //       lat: item.lat,
+  //       lon: item.lon,
+  //     }));
+  //
+  //     setSuggestions(formatted);
+  //   } catch (error) {
+  //     console.error('Failed to fetch suggestions:', error);
+  //     setSuggestions([]);
+  //   }
+  // };
 
-    const dummy = [
-      { place_name: 'Moscow, Russia' },
-      { place_name: 'Moscow State University' },
-      { place_name: 'Moscow City' },
-    ];
+  const searchPlace = async (text) => {
+    if (!text) return;
 
-    const filtered = dummy.filter((d) =>
-      d.place_name.toLowerCase().includes(text.toLowerCase())
-    );
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&limit=1`);
+      const data = await response.json();
 
-    setSuggestions(filtered);
+      if (data.length === 0) return;
+
+      const place = data[0];
+
+      if (map) {
+        console.log('MAP OK');
+        const latlng = L.latLng(parseFloat(place.lat), parseFloat(place.lon));
+
+        if (searchMarkerRef.current) {
+          map.removeLayer(searchMarkerRef.current);
+        }
+
+        const marker = L.marker(latlng, { icon: redIcon })
+          .addTo(map)
+          .bindPopup(place.display_name)
+          .openPopup();
+
+        searchMarkerRef.current = marker;
+
+        map.setView(latlng, 13);
+      } else {
+        console.log('MAP is null!');
+      }
+
+      onSearchClick(place);
+    } catch (error) {
+      console.error('Failed to search place:', error);
+    }
   };
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-    fetchSuggestions(value);
-  };
-
-  const handleSelect = (place) => {
-    setQuery(place.place_name);
-    setSuggestions([]);
-    onSearchClick(place.place_name);
+    setQuery(e.target.value);
+    // fetchSuggestions(e.target.value); // Временно отключено
   };
 
   const handleSearch = () => {
-    onSearchClick(query);
+    searchPlace(query);
   };
 
   return (
@@ -175,6 +213,7 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
         <SearchButton onClick={handleSearch} />
       </Paper>
 
+      {/* 
       {suggestions.length > 0 && (
         <Paper elevation={2} sx={suggestionsStyles}>
           {suggestions.map((s, i) => (
@@ -184,8 +223,10 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
           ))}
         </Paper>
       )}
+      */}
     </Box>
   );
 };
+
 
 export default GeocoderSearchBar;
