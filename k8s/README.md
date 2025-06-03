@@ -1,5 +1,22 @@
 # LogicWay Kubernetes Deployment
 
+## Rolling Update and Rollback
+
+#### [UPDATE] Change and apply manifests
+```bash
+kubectl apply -f k8s
+```
+
+#### Check the status of the deployment
+```bash
+kubectl rollout status deployment
+```
+
+#### [ROLLBACK] Rollback to the previous version
+```bash
+kubectl rollout undo deployment
+```
+
 ## Remote machine deployment
 
 #### Prerequisites

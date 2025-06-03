@@ -3,10 +3,15 @@ kind: Deployment
 metadata:
   name: logicway
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: logicway
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:

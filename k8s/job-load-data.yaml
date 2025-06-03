@@ -7,7 +7,7 @@ spec:
     spec:
       containers:
         - name: job-load
-          image: ghcr.io/logicwayteam/logicway:001
+          image: ghcr.io/logicwayteam/logicway:latest
           env:
             - name: INTERNAL
               value: "1"
