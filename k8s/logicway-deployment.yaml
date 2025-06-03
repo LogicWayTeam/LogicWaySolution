@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: logicway                                # Назва Deployment — можеш залишити
+  name: logicway
 spec:
-  replicas: 1                                   # Скільки pod-ів одночасно має бути запущено
+  replicas: 1
   selector:
     matchLabels:
-      app: logicway                             # Має збігатися з template.metadata.labels
+      app: logicway
   template:
     metadata:
       labels:
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: logicway
-          image: ghcr.io/logicwayteam/logicway:002
+          image: ghcr.io/logicwayteam/logicway:latest
           ports:
             - containerPort: 8000
           env:
