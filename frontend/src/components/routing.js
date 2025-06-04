@@ -1,7 +1,7 @@
 import { ROUTE_ENGINE_URL } from './config';
 import L from 'leaflet';
 
-export const buildRoute = async (map, stops, routeLayerRef, profile = 'pedestrian', color = 'red') => {
+export const buildRoute = async (map, stops, routeLayerRef, profile = 'pedestrian', color = '#c40035') => {
   const points = stops.map(stop => `${stop.lng},${stop.lat}`).join(';');
   const url = `${ROUTE_ENGINE_URL}/route/get_route?profile=${profile}&locations=${points}`;
 

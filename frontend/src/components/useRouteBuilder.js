@@ -4,6 +4,8 @@ import { reverseGeocodeLocal } from './geocoding';
 import { buildRoute } from './routing';
 import { redIcon } from './constants';
 import { ROUTE_ENGINE_URL } from './config';
+import { startIcon, endIcon } from './leafletIcons';
+
 
 
 const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
@@ -36,7 +38,6 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
           ],
           routeLayerRef,       // Слой маршрута
           'pedestrian',        // Профиль (пешеход, авто и т.п.)
-          'red'                // Цвет линии (необязательно)
         );
       }
     };
@@ -49,7 +50,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         map.removeLayer(lastRMarkerRef.current);
       }
 
-      lastRMarkerRef.current = L.marker(e.latlng, { icon: redIcon })
+      lastRMarkerRef.current = L.marker(e.latlng, { icon: startIcon })
         .addTo(map)
         .bindPopup(address)
         .openPopup();
@@ -63,7 +64,6 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
           ],
           routeLayerRef,       // Слой маршрута
           'pedestrian',        // Профиль (пешеход, авто и т.п.)
-          'red'                // Цвет линии (необязательно)
         );
       }
     };

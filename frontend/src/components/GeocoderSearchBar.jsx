@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import L from 'leaflet';
 import { Box, TextField, IconButton, Paper, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
@@ -137,6 +136,7 @@ const QueryInput = ({ value, onChange, onClear }) => (
 const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
   const [query, setQuery] = useState('');
   // const [suggestions, setSuggestions] = useState([]); // Подсказки временно отключены
+  const containerRef = useRef(null);
   const searchMarkerRef = useRef(null);
 
   // const fetchSuggestions = async (text) => {
@@ -158,6 +158,13 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
   //     setSuggestions([]);
   //   }
   // };
+
+    useEffect(() => {
+    if (containerRef.current) {
+      L.DomEvent.disableClickPropagation(containerRef.current);
+      L.DomEvent.disableScrollPropagation(containerRef.current);
+    }
+  }, []);
 
   const searchPlace = async (text) => {
     if (!text) return;
@@ -206,7 +213,7 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
   };
 
   return (
-    <Box sx={wrapperStyles}>
+    <Box ref={containerRef} sx={wrapperStyles}>
       <Paper elevation={4} sx={paperStyles}>
         <RouteButton onClick={onRouteClick} />
         <QueryInput value={query} onChange={handleChange} onClear={() => setQuery('')} />

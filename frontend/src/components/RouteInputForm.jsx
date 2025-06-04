@@ -1,4 +1,5 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import L from 'leaflet';
 import { Box, Button, TextField, Typography, Paper, IconButton } from '@mui/material';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import CircleIcon from '@mui/icons-material/Circle';
@@ -143,6 +144,7 @@ const CloseButton = ({ onClick }) => (
 const RouteInputForm = ({ onRouteSubmit, onClose }) => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
+  const containerRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -156,9 +158,17 @@ const RouteInputForm = ({ onRouteSubmit, onClose }) => {
     setDestination(origin);
   };
 
+  useEffect(() => {
+    if (containerRef.current) {
+      L.DomEvent.disableClickPropagation(containerRef.current);
+      L.DomEvent.disableScrollPropagation(containerRef.current);
+    }
+  }, []);
+
   return (
     <Paper
       elevation={4}
+      ref={containerRef}
       sx={{
         position: 'absolute',
         top: 12,
