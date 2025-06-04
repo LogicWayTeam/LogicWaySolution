@@ -38,7 +38,10 @@ export const buildRoute = async (map, stops, routeLayerRef, profile = 'pedestria
       }
 
       routeLayerRef.current = L.polyline(latLngs, { color, weight: 5 }).addTo(map);
-      map.fitBounds(routeLayerRef.current.getBounds());
+      map.fitBounds(routeLayerRef.current.getBounds(), {
+        paddingTopLeft: [300, 30],   
+        paddingBottomRight: [30, 30]  
+      });
     } else {
       console.error("Invalid route data", data);
     }

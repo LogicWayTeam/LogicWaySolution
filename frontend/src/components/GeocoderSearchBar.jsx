@@ -159,6 +159,7 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
   //   }
   // };
 
+  // Prevent clicks and scrolls from moving the map
     useEffect(() => {
     if (containerRef.current) {
       L.DomEvent.disableClickPropagation(containerRef.current);

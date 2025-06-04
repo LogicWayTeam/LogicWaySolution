@@ -158,6 +158,7 @@ const RouteInputForm = ({ onRouteSubmit, onClose }) => {
     setDestination(origin);
   };
 
+  // Prevent clicks and scrolls from moving the map
   useEffect(() => {
     if (containerRef.current) {
       L.DomEvent.disableClickPropagation(containerRef.current);
