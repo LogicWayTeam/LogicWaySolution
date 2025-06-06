@@ -1,0 +1,49 @@
+apiVersion: v1
+# --- Prometheus Configuration ---
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+
+# --- Grafana Configuration ---
+grafana:
+  # kubectl get secret <name-release>-grafana -n monitoring -o jsonpath="{.data.admin-password}" | base64 --decode
+  adminPassword: "grafana-admin-password"
+
+  persistence:
+    enabled: true
+    type: pvc
+    accessModes: ["ReadWriteOnce"]
+    size: 2Gi
+  service:
+    type: NodePort
+    port: 80
+    nodePort: 30003
+
+  initChownData:
+    enabled: false
+
+  podSecurityContext:
+    fsGroup: 472
+    runAsGroup: 472
+    runAsUser: 472
+
+
+# --- Alertmanager Configuration ---
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
