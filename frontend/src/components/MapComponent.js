@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, createContext, useContext } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -16,17 +16,22 @@ import { ROUTE_ENGINE_URL } from './config';
 import RouteControlContainer from './RouteControlContainer';
 import GeocoderSearchBar from './GeocoderSearchBar';
 
+// --- контекст карты ---
+export const MapContext = createContext(null);
+export const useLeafletMap = () => useContext(MapContext);
 
-
-const MapLogic = () => {
+const MapLogic = ({ children }) => {
   const map = useMap();
 
-  const searchMarkerRef = useGeocoder(map);
-  const stops = useStops(map);
-
+  useGeocoder(map);
+  useStops(map);
   useRouteBuilder(map, ROUTE_ENGINE_URL);
 
-  return null;
+  return (
+    <MapContext.Provider value={map}>
+      {children}
+    </MapContext.Provider>
+  );
 };
 
 
@@ -42,8 +47,9 @@ const MapComponent = () => {
         attribution="&copy; OpenStreetMap contributors"
       />
       <ZoomControl />
-      <RouteControlContainer />
-      <MapLogic />
+      <MapLogic>
+        <RouteControlContainer />
+      </MapLogic>
     </MapContainer>
   );
 };

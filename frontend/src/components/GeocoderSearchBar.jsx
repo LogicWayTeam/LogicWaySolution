@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import RouteIcon from '@mui/icons-material/AltRoute';
 import CloseIcon from '@mui/icons-material/Close';
 import { redIcon } from './constants';
+import { useLeafletMap } from './MapComponent';
 
 // === Styles ===
 const inputStyles = {
@@ -76,7 +77,7 @@ const SearchButton = ({ onClick } ) => (
   </IconButton>
 );
 
-const QueryInput = ({ value, onChange, onClear }) => (
+const QueryInput = ({ value, onChange, onClear, onKeyDown }) => (
   <Box
     sx={{
       ...inputStyles,
@@ -93,6 +94,7 @@ const QueryInput = ({ value, onChange, onClear }) => (
       variant="standard"
       value={value}
       onChange={onChange}
+      onKeyDown={onKeyDown}
       sx={{
         flex: 1,
         input: { color: 'black' },
@@ -133,11 +135,12 @@ const QueryInput = ({ value, onChange, onClear }) => (
 
 // === Main component ===
 
-const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
+const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
   const [query, setQuery] = useState('');
   // const [suggestions, setSuggestions] = useState([]); // Подсказки временно отключены
   const containerRef = useRef(null);
   const searchMarkerRef = useRef(null);
+  const map = useLeafletMap();
 
   // const fetchSuggestions = async (text) => {
   //   if (!text) return setSuggestions([]);
@@ -167,42 +170,75 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
     }
   }, []);
 
-  const searchPlace = async (text) => {
-    if (!text) return;
 
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&limit=1`);
-      const data = await response.json();
+const searchPlace = async (text) => {
+  // Проверка входных параметров
+  if (!text) {
+    console.warn('⛔️ searchPlace: текст запроса отсутствует');
+    return;
+  }
 
-      if (data.length === 0) return;
+  if (!map) {
+    console.warn('⛔️ searchPlace: объект карты (map) не инициализирован');
+    return;
+  }
 
-      const place = data[0];
+  console.log('🔍 Ищем адрес:', text);
 
-      if (map) {
-        console.log('MAP OK');
-        const latlng = L.latLng(parseFloat(place.lat), parseFloat(place.lon));
+  const url = `/routing/proxy_route_engine/geocode/geocode?address=${encodeURIComponent(text)}`;
+  console.log('🌐 URL запроса:', url);
 
-        if (searchMarkerRef.current) {
-          map.removeLayer(searchMarkerRef.current);
-        }
+  try {
+    const response = await fetch(url);
+    console.log('📡 Ответ от сервера:', response);
 
-        const marker = L.marker(latlng, { icon: redIcon })
-          .addTo(map)
-          .bindPopup(place.display_name)
-          .openPopup();
-
-        searchMarkerRef.current = marker;
-
-        map.setView(latlng, 13);
-      } else {
-        console.log('MAP is null!');
-      }
-
-      onSearchClick(place);
-    } catch (error) {
-      console.error('Failed to search place:', error);
+    if (!response.ok) {
+      throw new Error(`❌ HTTP ошибка: ${response.status} ${response.statusText}`);
     }
-  };
+
+    const data = await response.json();
+    console.log('📦 Данные из JSON:', data);
+
+    if (!data || typeof data !== 'object') {
+      throw new Error('❌ Неверный формат ответа от сервера');
+    }
+
+    if (!data.latitude || !data.longitude) {
+      throw new Error('❌ Координаты не найдены в ответе');
+    }
+
+    const latlng = L.latLng(data.latitude, data.longitude);
+    console.log('📍 Координаты:', latlng);
+
+    // Удалить предыдущий маркер, если он есть
+    if (searchMarkerRef.current) {
+      console.log('🧹 Удаляем предыдущий маркер');
+      map.removeLayer(searchMarkerRef.current);
+    }
+
+    const marker = L.marker(latlng, { icon: redIcon })
+      .addTo(map)
+      .bindPopup(data.address || text)
+      .openPopup();
+
+    searchMarkerRef.current = marker;
+
+    console.log('✅ Новый маркер добавлен и открыт');
+
+    map.setView(latlng, 16);
+    console.log('🗺 Центр карты установлен на координаты');
+
+    if (onSearchClick) {
+      console.log('📨 Вызываем onSearchClick');
+      onSearchClick(data);
+    }
+
+  } catch (error) {
+    console.error('🚨 Ошибка при поиске адреса:', error);
+    alert('Не удалось найти адрес: ' + error.message);
+  }
+};
+
 
   const handleChange = (e) => {
     setQuery(e.target.value);
@@ -210,14 +246,22 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick, map }) => {
   };
 
   const handleSearch = () => {
+    console.log('handleSearch вызван с:', query); // ← добавим отладку
     searchPlace(query);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      console.log('Enter pressed'); // ✅ проверка
+      handleSearch();
+    }
   };
 
   return (
     <Box ref={containerRef} sx={wrapperStyles}>
       <Paper elevation={4} sx={paperStyles}>
         <RouteButton onClick={onRouteClick} />
-        <QueryInput value={query} onChange={handleChange} onClear={() => setQuery('')} />
+        <QueryInput value={query} onChange={handleChange} onKeyDown={handleKeyDown} onClear={() => setQuery('')} />
         <SearchButton onClick={handleSearch} />
       </Paper>
 
