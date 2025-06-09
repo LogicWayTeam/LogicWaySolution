@@ -4,7 +4,7 @@ metadata:
   name: logicway
 spec:
   selector:
-    app: logicway
+    app: logicway             # Має збігатися з labels у deployment
   ports:
     - protocol: TCP
       port: 8000
