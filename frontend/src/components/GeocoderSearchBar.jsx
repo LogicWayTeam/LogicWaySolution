@@ -137,7 +137,7 @@ const QueryInput = ({ value, onChange, onClear, onKeyDown }) => (
 
 const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
   const [query, setQuery] = useState('');
-  // const [suggestions, setSuggestions] = useState([]); // Подсказки временно отключены
+  // const [suggestions, setSuggestions] = useState([]); // Suggestions are temporarily disabled.
   const containerRef = useRef(null);
   const searchMarkerRef = useRef(null);
   const map = useLeafletMap();
@@ -171,109 +171,67 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
   }, []);
 
 
-const searchPlace = async (text) => {
-  // Проверка входных параметров
-  if (!text) {
-    console.warn('⛔️ searchPlace: текст запроса отсутствует');
-    return;
-  }
+  // Performs geocoding and adds a marker to the map
+  const searchPlace = async (text) => {
+    if (!text || !map) return;
 
-  if (!map) {
-    console.warn('⛔️ searchPlace: объект карты (map) не инициализирован');
-    return;
-  }
+    const url = `/routing/proxy_route_engine/geocode/geocode?address=${encodeURIComponent(text)}`;
 
-  console.log('🔍 Ищем адрес:', text);
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
 
-  const url = `/routing/proxy_route_engine/geocode/geocode?address=${encodeURIComponent(text)}`;
-  console.log('🌐 URL запроса:', url);
+      const data = await response.json();
+      if (!data.latitude || !data.longitude) throw new Error('Coordinates not found');
 
-  try {
-    const response = await fetch(url);
-    console.log('📡 Ответ от сервера:', response);
+      const latlng = L.latLng(data.latitude, data.longitude);
 
-    if (!response.ok) {
-      throw new Error(`❌ HTTP ошибка: ${response.status} ${response.statusText}`);
-    }
+      if (searchMarkerRef.current) {
+        map.removeLayer(searchMarkerRef.current);
+      }
 
-    const data = await response.json();
-    console.log('📦 Данные из JSON:', data);
+      const marker = L.marker(latlng, { icon: redIcon })
+        .addTo(map)
+        .bindPopup(data.address || text)
+        .openPopup();
 
-    if (!data || typeof data !== 'object') {
-      throw new Error('❌ Неверный формат ответа от сервера');
-    }
+      searchMarkerRef.current = marker;
+      map.setView(latlng, 16);
 
-    if (!data.latitude || !data.longitude) {
-      throw new Error('❌ Координаты не найдены в ответе');
-    }
-
-    const latlng = L.latLng(data.latitude, data.longitude);
-    console.log('📍 Координаты:', latlng);
-
-    // Удалить предыдущий маркер, если он есть
-    if (searchMarkerRef.current) {
-      console.log('🧹 Удаляем предыдущий маркер');
-      map.removeLayer(searchMarkerRef.current);
-    }
-
-    const marker = L.marker(latlng, { icon: redIcon })
-      .addTo(map)
-      .bindPopup(data.address || text)
-      .openPopup();
-
-    searchMarkerRef.current = marker;
-
-    console.log('✅ Новый маркер добавлен и открыт');
-
-    map.setView(latlng, 16);
-    console.log('🗺 Центр карты установлен на координаты');
-
-    if (onSearchClick) {
-      console.log('📨 Вызываем onSearchClick с координатами и адресом');
-      onSearchClick({
+      onSearchClick?.({
         lat: data.latitude,
         lng: data.longitude,
         label: data.address || text,
         markerRef: marker,
       });
-    }
 
-  } catch (error) {
-    console.error('🚨 Ошибка при поиске адреса:', error);
-    alert('Не удалось найти адрес: ' + error.message);
-  }
-};
+    } catch (error) {
+      console.error('Error while searching for address:', error);
+      alert('Unable to find address: ' + error.message);
+    }
+  };
 
 
   const handleChange = (e) => {
     setQuery(e.target.value);
-    // fetchSuggestions(e.target.value); // Временно отключено
+    // fetchSuggestions(e.target.value); // Temporarily disabled
   };
 
   const handleSearch = () => {
-    console.log('handleSearch вызван с:', query); // ← добавим отладку
     searchPlace(query);
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      console.log('Enter pressed'); // ✅ проверка
-      handleSearch();
-    }
+    if (e.key === 'Enter') handleSearch();
   };
-
 
   const clearSearch = () => {
     setQuery('');
-
     if (searchMarkerRef.current && map) {
       map.removeLayer(searchMarkerRef.current);
       searchMarkerRef.current = null;
     }
-
-    if (onSearchClick) {
-      onSearchClick(null);
-    }
+    onSearchClick?.(null);
   };
 
   return (

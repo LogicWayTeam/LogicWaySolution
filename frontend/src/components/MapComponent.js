@@ -9,7 +9,6 @@ import '../App.css';
 import ZoomControl from './ZoomControl';
 import useStops from './useStops';
 import { POZNAN_CENTER, redIcon } from './constants';
-import useRouteButton from './useRouteButton';
 import useRouteBuilder from './useRouteBuilder';
 import { ROUTE_ENGINE_URL } from './config';
 import RouteControlContainer from './RouteControlContainer';

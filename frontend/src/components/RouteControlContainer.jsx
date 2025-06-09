@@ -9,8 +9,7 @@ const RouteControlContainer = () => {
   const [destination, setDestination] = useState(null);
 
   const handleRouteSubmit = (origin, destination) => {
-    console.log('Маршрут от:', origin, 'до:', destination);
-    // Здесь будет логика построения маршрута
+    // TODO: route building logic
   };
 
   return (
@@ -27,8 +26,7 @@ const RouteControlContainer = () => {
       ) : (
         <GeocoderSearchBar
           onSearchClick={(place) => {
-            console.log('📌 Геокодер установил:', place);
-            setGeocoderMarker(place); // ← сохраняем marker1
+            setGeocoderMarker(place);
           }}
           onRouteClick={() => {
             if (geocoderMarker) {
@@ -37,17 +35,16 @@ const RouteControlContainer = () => {
                 `${geocoderMarker.lat}, ${geocoderMarker.lng}`;
               setDestination(value);
 
-              // Удаляем маркер с карты, если есть markerRef
               if (geocoderMarker.markerRef) {
-                geocoderMarker.markerRef.remove(); // 🧹 удаление с карты
+                geocoderMarker.markerRef.remove();
               }
 
-              setGeocoderMarker(null); // очищаем состояние маркера
+              setGeocoderMarker(null);
             } else {
               setDestination('');
             }
 
-            setShowForm(true); // показываем форму
+            setShowForm(true);
           }}
 
         />
