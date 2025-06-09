@@ -229,8 +229,13 @@ const searchPlace = async (text) => {
     console.log('🗺 Центр карты установлен на координаты');
 
     if (onSearchClick) {
-      console.log('📨 Вызываем onSearchClick');
-      onSearchClick(data);
+      console.log('📨 Вызываем onSearchClick с координатами и адресом');
+      onSearchClick({
+        lat: data.latitude,
+        lng: data.longitude,
+        label: data.address || text,
+        markerRef: marker,
+      });
     }
 
   } catch (error) {
@@ -257,11 +262,25 @@ const searchPlace = async (text) => {
     }
   };
 
+
+  const clearSearch = () => {
+    setQuery('');
+
+    if (searchMarkerRef.current && map) {
+      map.removeLayer(searchMarkerRef.current);
+      searchMarkerRef.current = null;
+    }
+
+    if (onSearchClick) {
+      onSearchClick(null);
+    }
+  };
+
   return (
     <Box ref={containerRef} sx={wrapperStyles}>
       <Paper elevation={4} sx={paperStyles}>
         <RouteButton onClick={onRouteClick} />
-        <QueryInput value={query} onChange={handleChange} onKeyDown={handleKeyDown} onClear={() => setQuery('')} />
+        <QueryInput value={query} onChange={handleChange} onKeyDown={handleKeyDown} onClear={clearSearch} />
         <SearchButton onClick={handleSearch} />
       </Paper>
 

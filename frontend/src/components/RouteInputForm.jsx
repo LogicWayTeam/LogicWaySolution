@@ -141,9 +141,9 @@ const CloseButton = ({ onClick }) => (
 );
 
 
-const RouteInputForm = ({ onRouteSubmit, onClose }) => {
-  const [origin, setOrigin] = useState('');
-  const [destination, setDestination] = useState('');
+// === Main component ===
+
+const RouteInputForm = ({ onRouteSubmit, onClose, origin, destination, setOrigin, setDestination }) => {
   const containerRef = useRef(null);
 
   const handleSubmit = (e) => {
@@ -189,13 +189,13 @@ const RouteInputForm = ({ onRouteSubmit, onClose }) => {
             <InputWithIcon
               icon={<CircleIcon sx={{ color: 'black', fontSize: 13 }} />}
               label="From"
-              value={origin}
+              value={origin || ''}
               onChange={(e) => setOrigin(e.target.value)}
             />
             <InputWithIcon
               icon={<FlagIcon sx={{ color: '#c40035', fontSize: 20 }} />}
               label="To"
-              value={destination}
+              value={destination || ''}
               onChange={(e) => setDestination(e.target.value)}
             />
           </Box>

@@ -9,21 +9,19 @@ import '../App.css';
 import ZoomControl from './ZoomControl';
 import useStops from './useStops';
 import { POZNAN_CENTER, redIcon } from './constants';
-import useGeocoder from './useGeocoder';
 import useRouteButton from './useRouteButton';
 import useRouteBuilder from './useRouteBuilder';
 import { ROUTE_ENGINE_URL } from './config';
 import RouteControlContainer from './RouteControlContainer';
 import GeocoderSearchBar from './GeocoderSearchBar';
 
-// --- контекст карты ---
+// --- Map Context ---
 export const MapContext = createContext(null);
 export const useLeafletMap = () => useContext(MapContext);
 
 const MapLogic = ({ children }) => {
   const map = useMap();
 
-  useGeocoder(map);
   useStops(map);
   useRouteBuilder(map, ROUTE_ENGINE_URL);
 
