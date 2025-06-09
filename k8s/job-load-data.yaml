@@ -3,8 +3,10 @@ kind: Job
 metadata:
   name: job-load-data
 spec:
+  backoffLimit: 1
   template:
     spec:
+      restartPolicy: Never
       containers:
         - name: job-load
           image: ghcr.io/logicwayteam/logicway:001
@@ -12,7 +14,10 @@ spec:
             - name: INTERNAL
               value: "1"
           command: [ "/bin/sh", "-c" ]
+          envFrom:
+            - configMapRef:
+                name: app-config
+            - secretRef:
+                name: app-secret
           args:
-            - "poetry run python database/upload_data.py && poetry run python database/load_data.py"
-      restartPolicy: Never
-  backoffLimit: 1
+              - "poetry run python database/upload_data.py && poetry run python database/load_data.py"
