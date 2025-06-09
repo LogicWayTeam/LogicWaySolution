@@ -211,7 +211,6 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
     }
   };
 
-
   const handleChange = (e) => {
     setQuery(e.target.value);
     // fetchSuggestions(e.target.value); // Temporarily disabled
