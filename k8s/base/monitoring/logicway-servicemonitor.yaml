@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: logicway-default-monitor
+  namespace: monitoring
+  labels:
+    release: monitor
+    app: logicway
+spec:
+  selector:
+    matchLabels:
+      app: logicway
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: http-django-8000
+      path: /metrics
+      interval: 30s
+      relabelings:
+        - targetLabel: __host__
+          replacement: "logicway.default.svc.cluster.local"
+          action: replace

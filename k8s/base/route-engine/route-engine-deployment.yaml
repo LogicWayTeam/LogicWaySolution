@@ -3,10 +3,15 @@ kind: Deployment
 metadata:
   name: route-engine
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: route-engine
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
   template:
     metadata:
       labels:
@@ -14,13 +19,13 @@ spec:
     spec:
       containers:
         - name: route-engine
-          image: ghcr.io/logicwayteam/route-engine:001
+          image: ghcr.io/logicwayteam/route-engine:latest
           ports:
             - containerPort: 8001
           env:
             - name: DJANGO_SETTINGS_MODULE
-              value: route_engine.settings.prod
-            - name: SECRET_KEY
+              value: route_engine.settings.dev
+            - name: ROUTE_ENGINE_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: app-secret

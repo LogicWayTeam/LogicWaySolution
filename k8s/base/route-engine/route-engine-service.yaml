@@ -2,11 +2,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: route-engine
+  labels:
+    app: route-engine
 spec:
   selector:
     app: route-engine
   ports:
-    - protocol: TCP
+    - name: http-django-8001
+      protocol: TCP
       port: 8001
       targetPort: 8001
   type: ClusterIP
