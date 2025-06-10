@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import L from 'leaflet';
 import { Box, TextField, IconButton, Paper, MenuItem } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import RouteIcon from '@mui/icons-material/AltRoute';
 import CloseIcon from '@mui/icons-material/Close';
+import { redIcon } from './constants';
+import { useLeafletMap } from './MapComponent';
 
 // === Styles ===
 const inputStyles = {
@@ -74,7 +77,7 @@ const SearchButton = ({ onClick } ) => (
   </IconButton>
 );
 
-const QueryInput = ({ value, onChange, onClear }) => (
+const QueryInput = ({ value, onChange, onClear, onKeyDown }) => (
   <Box
     sx={{
       ...inputStyles,
@@ -91,6 +94,7 @@ const QueryInput = ({ value, onChange, onClear }) => (
       variant="standard"
       value={value}
       onChange={onChange}
+      onKeyDown={onKeyDown}
       sx={{
         flex: 1,
         input: { color: 'black' },
@@ -133,48 +137,111 @@ const QueryInput = ({ value, onChange, onClear }) => (
 
 const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
   const [query, setQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
+  // const [suggestions, setSuggestions] = useState([]); // Suggestions are temporarily disabled.
+  const containerRef = useRef(null);
+  const searchMarkerRef = useRef(null);
+  const map = useLeafletMap();
 
-  const fetchSuggestions = async (text) => {
-    if (!text) return setSuggestions([]);
+  // const fetchSuggestions = async (text) => {
+  //   if (!text) return setSuggestions([]);
+  //
+  //   try {
+  //     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(text)}&limit=5`);
+  //     const data = await response.json();
+  //
+  //     const formatted = data.map((item) => ({
+  //       place_name: item.display_name,
+  //       lat: item.lat,
+  //       lon: item.lon,
+  //     }));
+  //
+  //     setSuggestions(formatted);
+  //   } catch (error) {
+  //     console.error('Failed to fetch suggestions:', error);
+  //     setSuggestions([]);
+  //   }
+  // };
 
-    const dummy = [
-      { place_name: 'Moscow, Russia' },
-      { place_name: 'Moscow State University' },
-      { place_name: 'Moscow City' },
-    ];
+  // Prevent clicks and scrolls from moving the map
+    useEffect(() => {
+    if (containerRef.current) {
+      L.DomEvent.disableClickPropagation(containerRef.current);
+      L.DomEvent.disableScrollPropagation(containerRef.current);
+    }
+  }, []);
 
-    const filtered = dummy.filter((d) =>
-      d.place_name.toLowerCase().includes(text.toLowerCase())
-    );
 
-    setSuggestions(filtered);
+  // Performs geocoding and adds a marker to the map
+  const searchPlace = async (text) => {
+    if (!text || !map) return;
+
+    const url = `/routing/proxy_route_engine/geocode/geocode?address=${encodeURIComponent(text)}`;
+
+    try {
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Error: ${response.status} ${response.statusText}`);
+
+      const data = await response.json();
+      if (!data.latitude || !data.longitude) throw new Error('Coordinates not found');
+
+      const latlng = L.latLng(data.latitude, data.longitude);
+
+      if (searchMarkerRef.current) {
+        map.removeLayer(searchMarkerRef.current);
+      }
+
+      const marker = L.marker(latlng, { icon: redIcon })
+        .addTo(map)
+        .bindPopup(data.address || text)
+        .openPopup();
+
+      searchMarkerRef.current = marker;
+      map.setView(latlng, 16);
+
+      onSearchClick?.({
+        lat: data.latitude,
+        lng: data.longitude,
+        label: data.address || text,
+        markerRef: marker,
+      });
+
+    } catch (error) {
+      console.error('Error while searching for address:', error);
+      alert('Unable to find address: ' + error.message);
+    }
   };
 
   const handleChange = (e) => {
-    const value = e.target.value;
-    setQuery(value);
-    fetchSuggestions(value);
-  };
-
-  const handleSelect = (place) => {
-    setQuery(place.place_name);
-    setSuggestions([]);
-    onSearchClick(place.place_name);
+    setQuery(e.target.value);
+    // fetchSuggestions(e.target.value); // Temporarily disabled
   };
 
   const handleSearch = () => {
-    onSearchClick(query);
+    searchPlace(query);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') handleSearch();
+  };
+
+  const clearSearch = () => {
+    setQuery('');
+    if (searchMarkerRef.current && map) {
+      map.removeLayer(searchMarkerRef.current);
+      searchMarkerRef.current = null;
+    }
+    onSearchClick?.(null);
   };
 
   return (
-    <Box sx={wrapperStyles}>
+    <Box ref={containerRef} sx={wrapperStyles}>
       <Paper elevation={4} sx={paperStyles}>
         <RouteButton onClick={onRouteClick} />
-        <QueryInput value={query} onChange={handleChange} onClear={() => setQuery('')} />
+        <QueryInput value={query} onChange={handleChange} onKeyDown={handleKeyDown} onClear={clearSearch} />
         <SearchButton onClick={handleSearch} />
       </Paper>
 
+      {/* 
       {suggestions.length > 0 && (
         <Paper elevation={2} sx={suggestionsStyles}>
           {suggestions.map((s, i) => (
@@ -184,8 +251,10 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
           ))}
         </Paper>
       )}
+      */}
     </Box>
   );
 };
+
 
 export default GeocoderSearchBar;

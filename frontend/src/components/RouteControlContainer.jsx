@@ -4,23 +4,49 @@ import GeocoderSearchBar from './GeocoderSearchBar';
 
 const RouteControlContainer = () => {
   const [showForm, setShowForm] = useState(false);
+  const [geocoderMarker, setGeocoderMarker] = useState(null);
+  const [origin, setOrigin] = useState(null);
+  const [destination, setDestination] = useState(null);
 
   const handleRouteSubmit = (origin, destination) => {
-    console.log('Маршрут от:', origin, 'до:', destination);
-    // Здесь будет логика построения маршрута
+    // TODO: route building logic
   };
 
   return (
     <>
       {showForm ? (
         <RouteInputForm
-          onSubmit={handleRouteSubmit}
+          onRouteSubmit={handleRouteSubmit}
           onClose={() => setShowForm(false)} 
+          origin={origin}
+          destination={destination}
+          setOrigin={setOrigin}
+          setDestination={setDestination}
         />
       ) : (
         <GeocoderSearchBar
-          onSearchClick={(place) => console.log('Искать:', place)}
-          onRouteClick={() => setShowForm(true)} 
+          onSearchClick={(place) => {
+            setGeocoderMarker(place);
+          }}
+          onRouteClick={() => {
+            if (geocoderMarker) {
+              const value =
+                geocoderMarker.label ||
+                `${geocoderMarker.lat}, ${geocoderMarker.lng}`;
+              setDestination(value);
+
+              if (geocoderMarker.markerRef) {
+                geocoderMarker.markerRef.remove();
+              }
+
+              setGeocoderMarker(null);
+            } else {
+              setDestination('');
+            }
+
+            setShowForm(true);
+          }}
+
         />
       )}
     </>
