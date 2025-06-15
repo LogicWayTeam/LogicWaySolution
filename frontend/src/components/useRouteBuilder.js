@@ -36,8 +36,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
             lastLMarkerRef.current.getLatLng(),
             lastRMarkerRef.current.getLatLng()
           ],
-          routeLayerRef,       // Слой маршрута
-          'pedestrian',        // Профиль (пешеход, авто и т.п.)
+          routeLayerRef,
         );
       }
     };
@@ -63,7 +62,6 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
             lastRMarkerRef.current.getLatLng()
           ],
           routeLayerRef,       // Слой маршрута
-          'pedestrian',        // Профиль (пешеход, авто и т.п.)
         );
       }
     };
