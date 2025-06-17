@@ -1,4 +1,4 @@
-import { LOGICWAY_URL } from './config';
+import { LOGICWAY_URL, ROUTE_ENGINE_URL } from './config';
 import L from 'leaflet';
 
 export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') => {
@@ -35,36 +35,51 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
     let hasValidLayers = false;
 
     if (data.segments && Array.isArray(data.segments)) {
-      data.segments.forEach(segment => {
+      for (const segment of data.segments) {
         let latLngs = [];
         let segColor = segment.type === "walking" ? "#af399b" : "#FF0000";
-
-        // Line style options
         let lineOptions = {
           color: segColor,
           weight: 5
         };
 
-        // Add dashArray for walking segments
         if (segment.type === "walking") {
           lineOptions.dashArray = "10, 10";
-        }
+          let from, to;
 
-        if (segment.type === "walking") {
-          // Handle walking segments with array coordinates [lat, lng]
-          if (Array.isArray(segment.from) && Array.isArray(segment.to) &&
-              segment.from.length >= 2 && segment.to.length >= 2) {
-            latLngs = [segment.from, segment.to];
+          if (Array.isArray(segment.from) && Array.isArray(segment.to)) {
+            from = segment.from;
+            to = segment.to;
+          } else if (segment.from && segment.to) {
+            from = [segment.from.lat, segment.from.lng];
+            to = [segment.to.lat, segment.to.lng];
           }
-          // Object format handling as fallback
-          else if (segment.from && segment.to &&
-              segment.from.lat && segment.from.lng &&
-              segment.to.lat && segment.to.lng) {
-            latLngs = [[segment.from.lat, segment.from.lng], [segment.to.lat, segment.to.lng]];
+
+          if (from && to) {
+            try {
+              const points = `${from[0]},${from[1]};${to[0]},${to[1]}`;
+              const walkingUrl = `${ROUTE_ENGINE_URL}/route/get_route?profile=pedestrian&locations=${points}`;
+              console.log(`Requesting pedestrian route: ${walkingUrl}`);
+              const walkResponse = await fetch(walkingUrl);
+
+              if (walkResponse.ok) {
+                const walkData = await walkResponse.json();
+                if (walkData && walkData.geometry && Array.isArray(walkData.geometry)) {
+                  latLngs = walkData.geometry.map(point =>
+                      Array.isArray(point) ? point : [point.lat, point.lng]
+                  );
+                } else {
+                  latLngs = [from, to];
+                }
+              } else {
+                latLngs = [from, to];
+              }
+            } catch (error) {
+              console.error('Error fetching pedestrian route:', error);
+              latLngs = [from, to];
+            }
           }
-        }
-        else if (segment.type === "transport") {
-          // Handle transport segments where location is an array [lat, lng]
+        } else if (segment.type === "transport") {
           if (segment.from_stop && segment.to_stop) {
             const fromLocation = segment.from_stop.location;
             const toLocation = segment.to_stop.location;
@@ -72,50 +87,39 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
             if (Array.isArray(fromLocation) && Array.isArray(toLocation) &&
                 fromLocation.length >= 2 && toLocation.length >= 2) {
               latLngs = [fromLocation, toLocation];
-            }
-            // Object format handling as fallback
-            else if (fromLocation && toLocation &&
+            } else if (fromLocation && toLocation &&
                 fromLocation.lat && fromLocation.lng &&
                 toLocation.lat && toLocation.lng) {
               latLngs = [[fromLocation.lat, fromLocation.lng], [toLocation.lat, toLocation.lng]];
             }
-          }
-          // Check for geometry as another option
-          else if (segment.geometry && Array.isArray(segment.geometry)) {
+          } else if (segment.geometry && Array.isArray(segment.geometry)) {
             latLngs = segment.geometry.map(point =>
-                Array.isArray(point) ? point : [point.lat, point.lng]);
+                Array.isArray(point) ? point : [point.lat, point.lng]
+            );
           }
         }
 
         if (latLngs.length > 0 && latLngs.every(coord =>
             Array.isArray(coord) && coord.length >= 2 && !isNaN(coord[0]) && !isNaN(coord[1]))) {
-
-          // Add the polyline
           L.polyline(latLngs, lineOptions).addTo(routeLayerRef.current);
-
-          // Add circle with route number for transport segments
           if (segment.type === "transport" && segment.route_number) {
             const startPoint = latLngs[0];
-
-            // Create a custom icon with route number
+            const endPoint = latLngs[1];
             const routeIcon = L.divIcon({
               html: `<div style="background-color:#FF0000; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:bold;">${segment.route_number}</div>`,
               className: 'route-number-icon',
               iconSize: [24, 24],
               iconAnchor: [12, 12]
             });
-
-            // Add marker with the icon
             L.marker(startPoint, { icon: routeIcon }).addTo(routeLayerRef.current);
+            L.marker(endPoint, { icon: routeIcon }).addTo(routeLayerRef.current);
           }
-
           hasValidLayers = true;
         } else {
           console.warn('Invalid coordinates in segment:', segment);
         }
-      });
+      }
 
-      // Only fit bounds if we have layers
       if (hasValidLayers && routeLayerRef.current.getLayers().length > 0) {
         try {
           map.fitBounds(routeLayerRef.current.getBounds(), {
@@ -127,10 +131,9 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
         }
       }
     } else if (data.geometry && Array.isArray(data.geometry) && data.geometry.length > 0) {
-      // fallback for old geometry
       const latLngs = data.geometry.map(coords => {
         if (Array.isArray(coords) && coords.length >= 2) {
-          return [coords[1], coords[0]]; // [lat, lng] from [lng, lat]
+          return [coords[1], coords[0]];
         }
         return null;
       }).filter(coord => coord !== null);

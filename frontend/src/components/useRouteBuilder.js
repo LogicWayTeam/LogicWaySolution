@@ -3,9 +3,7 @@ import L from 'leaflet';
 import { reverseGeocodeLocal } from './geocoding';
 import { buildRoute } from './routing';
 import { redIcon } from './constants';
-import { ROUTE_ENGINE_URL } from './config';
 import { startIcon, endIcon } from './leafletIcons';
-
 
 
 const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
@@ -73,7 +71,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
       map.off('click', handleClick);
       map.off('contextmenu', handleRightClick);
     };
-  }, [map]);
+  }, [map], [ROUTE_ENGINE_URL]);
 };
 
 export default useRouteBuilder;
