@@ -6,6 +6,7 @@ import RouteIcon from '@mui/icons-material/AltRoute';
 import CloseIcon from '@mui/icons-material/Close';
 import { redIcon } from './constants';
 import { useLeafletMap } from './MapComponent';
+import { ROUTE_ENGINE_URL } from './config';
 
 // === Styles ===
 const inputStyles = {
@@ -175,7 +176,7 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
   const searchPlace = async (text) => {
     if (!text || !map) return;
 
-    const url = `/routing/proxy_route_engine/geocode/geocode?address=${encodeURIComponent(text)}`;
+    const url = `${ROUTE_ENGINE_URL}/geocode/geocode?address=${encodeURIComponent(text)}`;
 
     try {
       const response = await fetch(url);

@@ -331,6 +331,21 @@ asgiref = ">=3.6"
 django = ">=4.2"
 
 [[package]]
+name = "django-prometheus"
+version = "2.3.1"
+description = "Django middlewares to monitor your application with Prometheus.io."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "django-prometheus-2.3.1.tar.gz", hash = "sha256:f9c8b6c780c9419ea01043c63a437d79db2c33353451347894408184ad9c3e1e"},
+    {file = "django_prometheus-2.3.1-py2.py3-none-any.whl", hash = "sha256:cf9b26f7ba2e4568f08f8f91480a2882023f5908579681bcf06a4d2465f12168"},
+]
+
+[package.dependencies]
+prometheus-client = ">=0.7"
+
+[[package]]
 name = "exceptiongroup"
 version = "1.3.0"
 description = "Backport of PEP 654 (exception groups)"
@@ -907,6 +922,21 @@ files = [
 [package.extras]
 dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
+
+[[package]]
+name = "prometheus-client"
+version = "0.22.1"
+description = "Python client for the Prometheus monitoring system."
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "prometheus_client-0.22.1-py3-none-any.whl", hash = "sha256:cca895342e308174341b2cbf99a56bef291fbc0ef7b9e5412a0f26d653ba7094"},
+    {file = "prometheus_client-0.22.1.tar.gz", hash = "sha256:190f1331e783cf21eb60bca559354e0a4d4378facecf78f5428c39b675d20d28"},
+]
+
+[package.extras]
+twisted = ["twisted"]
 
 [[package]]
 name = "psycopg2-binary"
@@ -1548,4 +1578,4 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.10"
-content-hash = "170244ad1a7806b3242ce85120c3a6de0d0c0dd247d64ba4c364670328aa4931"
+content-hash = "6870a1df8db709e4bc17fed3b1491e31602ac4ddbc97ded03c0b0da44dac459c"

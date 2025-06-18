@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import RouteInputForm from './RouteInputForm';
 import GeocoderSearchBar from './GeocoderSearchBar';
 
@@ -13,43 +13,42 @@ const RouteControlContainer = () => {
   };
 
   return (
-    <>
-      {showForm ? (
-        <RouteInputForm
-          onRouteSubmit={handleRouteSubmit}
-          onClose={() => setShowForm(false)} 
-          origin={origin}
-          destination={destination}
-          setOrigin={setOrigin}
-          setDestination={setDestination}
-        />
-      ) : (
-        <GeocoderSearchBar
-          onSearchClick={(place) => {
-            setGeocoderMarker(place);
-          }}
-          onRouteClick={() => {
-            if (geocoderMarker) {
-              const value =
-                geocoderMarker.label ||
-                `${geocoderMarker.lat}, ${geocoderMarker.lng}`;
-              setDestination(value);
+      <>
+        {showForm ? (
+            <RouteInputForm
+                onRouteSubmit={handleRouteSubmit}
+                onClose={() => setShowForm(false)}
+                origin={origin}
+                destination={destination}
+                setOrigin={setOrigin}
+                setDestination={setDestination}
+            />
+        ) : (
+            <GeocoderSearchBar
+                onSearchClick={(place) => {
+                  setGeocoderMarker(place);
+                }}
+                onRouteClick={() => {
+                  if (geocoderMarker) {
+                    const value =
+                        geocoderMarker.label ||
+                        `${geocoderMarker.lat}, ${geocoderMarker.lng}`;
+                    setDestination(value);
 
-              if (geocoderMarker.markerRef) {
-                geocoderMarker.markerRef.remove();
-              }
+                    if (geocoderMarker.markerRef) {
+                      geocoderMarker.markerRef.remove();
+                    }
 
-              setGeocoderMarker(null);
-            } else {
-              setDestination('');
-            }
+                    setGeocoderMarker(null);
+                  } else {
+                    setDestination('');
+                  }
 
-            setShowForm(true);
-          }}
-
-        />
-      )}
-    </>
+                  setShowForm(true);
+                }}
+            />
+        )}
+      </>
   );
 };
 

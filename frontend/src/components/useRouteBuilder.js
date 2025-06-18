@@ -3,9 +3,12 @@ import L from 'leaflet';
 import { reverseGeocodeLocal } from './geocoding';
 import { buildRoute } from './routing';
 import { redIcon } from './constants';
+<<<<<<< HEAD
 import { ROUTE_ENGINE_URL } from './config';
 import { startIcon } from './leafletIcons';
-
+=======
+import { startIcon, endIcon } from './leafletIcons';
+>>>>>>> origin/main
 
 
 const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
@@ -43,7 +46,20 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         .bindPopup(address)
         .openPopup();
 
+<<<<<<< HEAD
       tryBuildRoute();
+=======
+      if (lastLMarkerRef.current && lastRMarkerRef.current) {
+        buildRoute(
+          map,
+          [
+            lastLMarkerRef.current.getLatLng(),
+            lastRMarkerRef.current.getLatLng()
+          ],
+          routeLayerRef,
+        );
+      }
+>>>>>>> origin/main
     };
 
     const handleRightClick = async (e) => {
@@ -59,7 +75,20 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         .bindPopup(address)
         .openPopup();
 
+<<<<<<< HEAD
       tryBuildRoute();
+=======
+      if (lastLMarkerRef.current && lastRMarkerRef.current) {
+        buildRoute(
+          map,
+          [
+            lastLMarkerRef.current.getLatLng(),
+            lastRMarkerRef.current.getLatLng()
+          ],
+          routeLayerRef,       // Слой маршрута
+        );
+      }
+>>>>>>> origin/main
     };
 
     map.on('click', handleClick);
@@ -69,7 +98,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
       map.off('click', handleClick);
       map.off('contextmenu', handleRightClick);
     };
-  }, [map]);
+  }, [map], [ROUTE_ENGINE_URL]);
 };
 
 export default useRouteBuilder;

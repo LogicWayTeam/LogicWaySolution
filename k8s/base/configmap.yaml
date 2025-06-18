@@ -7,3 +7,5 @@ data:
   DB_HOST: "postgres"
   DB_PORT: "5432"
   ROUTE_ENGINE_URL: "http://route-engine:8001"
+  REACT_APP_LOGICWAY_URL: "http://192.168.49.2:30001"
+  REACT_APP_ROUTE_ENGINE_URL: "http://192.168.49.2:30001/routing/proxy_route_engine"

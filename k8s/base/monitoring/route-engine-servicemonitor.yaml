@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: route-engine-default-monitor
+  namespace: monitoring
+  labels:
+    release: monitor
+    app: route-engine
+spec:
+  selector:
+    matchLabels:
+      app: route-engine
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+    - port: http-django-8001
+      path: /metrics
+      interval: 30s
+      relabelings:
+        - targetLabel: __host__
+          replacement: "route-engine.default.svc.cluster.local"
+          action: replace

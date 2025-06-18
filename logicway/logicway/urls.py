@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django_prometheus.exports import ExportToDjangoView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -23,4 +24,5 @@ urlpatterns = [
     path('api/', include('database.urls')),  # Changed the root path for API endpoints
     path('', include('map.urls', namespace='map')),
     path('routing/', include('routing.urls', namespace='routing')),
+    path('metrics', ExportToDjangoView, name='prometheus-django-metrics'),
 ]
