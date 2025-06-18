@@ -4,7 +4,7 @@ import { reverseGeocodeLocal } from './geocoding';
 import { buildRoute } from './routing';
 import { redIcon } from './constants';
 import { ROUTE_ENGINE_URL } from './config';
-import { startIcon, endIcon } from './leafletIcons';
+import { startIcon } from './leafletIcons';
 
 
 
@@ -15,6 +15,20 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
 
   useEffect(() => {
     if (!map) return;
+
+    const tryBuildRoute = () => {
+      if (lastLMarkerRef.current && lastRMarkerRef.current) {
+        buildRoute(
+          map,
+          [
+            lastLMarkerRef.current.getLatLng(),
+            lastRMarkerRef.current.getLatLng()
+          ],
+          routeLayerRef,
+          'pedestrian'
+        );
+      }
+    };
 
     const handleClick = async (e) => {
       e.originalEvent.preventDefault();
@@ -29,17 +43,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         .bindPopup(address)
         .openPopup();
 
-      if (lastLMarkerRef.current && lastRMarkerRef.current) {
-        buildRoute(
-          map,
-          [
-            lastLMarkerRef.current.getLatLng(),
-            lastRMarkerRef.current.getLatLng()
-          ],
-          routeLayerRef,       // Слой маршрута
-          'pedestrian',        // Профиль (пешеход, авто и т.п.)
-        );
-      }
+      tryBuildRoute();
     };
 
     const handleRightClick = async (e) => {
@@ -55,17 +59,7 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
         .bindPopup(address)
         .openPopup();
 
-      if (lastLMarkerRef.current && lastRMarkerRef.current) {
-        buildRoute(
-          map,
-          [
-            lastLMarkerRef.current.getLatLng(),
-            lastRMarkerRef.current.getLatLng()
-          ],
-          routeLayerRef,       // Слой маршрута
-          'pedestrian',        // Профиль (пешеход, авто и т.п.)
-        );
-      }
+      tryBuildRoute();
     };
 
     map.on('click', handleClick);
