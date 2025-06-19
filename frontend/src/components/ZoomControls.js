@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useMap } from 'react-leaflet';
 import L from 'leaflet';
 
-const ZoomControl = () => {
+const ZoomControls = () => {
   const map = useMap();
 
   useEffect(() => {
@@ -16,4 +16,4 @@ const ZoomControl = () => {
   return null;
 };
 
-export default ZoomControl;
+export default ZoomControls;

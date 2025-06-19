@@ -1,12 +1,26 @@
 import React, { useState, useRef } from 'react';
 import RouteInputForm from './RouteInputForm';
 import GeocoderSearchBar from './GeocoderSearchBar';
+import { useLeafletMap } from './MapComponent';
+import useRouteBuilder from './useRouteBuilder';
+import { ROUTE_ENGINE_URL } from './config';
 
 const RouteControlContainer = () => {
   const [showForm, setShowForm] = useState(false);
   const [geocoderMarker, setGeocoderMarker] = useState(null);
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
+
+  const map = useLeafletMap();
+
+  // processing map clicks
+  useRouteBuilder(
+    map,
+    ROUTE_ENGINE_URL,
+    setOrigin,
+    setDestination,
+    () => setShowForm(true)
+  );
 
   const handleRouteSubmit = (origin, destination) => {
     // TODO: route building logic

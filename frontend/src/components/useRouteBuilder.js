@@ -6,7 +6,7 @@ import { redIcon } from './constants';
 import { startIcon } from './leafletIcons';
 
 
-const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
+const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  openForm ) => {
   const lastLMarkerRef = useRef(null);
   const lastRMarkerRef = useRef(null);
   const routeLayerRef = useRef(null);
@@ -16,14 +16,17 @@ const useRouteBuilder = (map, ROUTE_ENGINE_URL) => {
 
     const tryBuildRoute = () => {
       if (lastLMarkerRef.current && lastRMarkerRef.current) {
+        const originLatLng = lastRMarkerRef.current.getLatLng();
+        const destinationLatLng = lastLMarkerRef.current.getLatLng();
+
+        setOrigin(`${originLatLng.lat}, ${originLatLng.lng}`);
+        setDestination(`${destinationLatLng.lat}, ${destinationLatLng.lng}`);
+        openForm();
+
         buildRoute(
           map,
-          [
-            lastLMarkerRef.current.getLatLng(),
-            lastRMarkerRef.current.getLatLng()
-          ],
+          [destinationLatLng, originLatLng],
           routeLayerRef,
-          'pedestrian'
         );
       }
     };

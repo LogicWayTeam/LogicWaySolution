@@ -22,7 +22,6 @@ const MapLogic = ({ children }) => {
   const map = useMap();
 
   useStops(map);
-  useRouteBuilder(map, ROUTE_ENGINE_URL);
 
   return (
     <MapContext.Provider value={map}>
