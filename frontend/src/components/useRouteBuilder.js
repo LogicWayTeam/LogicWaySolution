@@ -6,10 +6,9 @@ import { redIcon } from './constants';
 import { startIcon } from './leafletIcons';
 
 
-const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  openForm ) => {
+const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  openForm, routeLayerRef ) => {
   const lastLMarkerRef = useRef(null);
   const lastRMarkerRef = useRef(null);
-  const routeLayerRef = useRef(null);
 
   useEffect(() => {
     if (!map) return;
@@ -70,7 +69,26 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  ope
       map.off('click', handleClick);
       map.off('contextmenu', handleRightClick);
     };
-  }, [map], [ROUTE_ENGINE_URL]);
+  }, [map, ROUTE_ENGINE_URL, openForm, setOrigin, setDestination, routeLayerRef]);
+
+  const clearMap = () => {
+    if (lastLMarkerRef.current) {
+      map.removeLayer(lastLMarkerRef.current);
+      lastLMarkerRef.current = null;
+    }
+
+    if (lastRMarkerRef.current) {
+      map.removeLayer(lastRMarkerRef.current);
+      lastRMarkerRef.current = null;
+    }
+
+    if (routeLayerRef.current) {
+      map.removeLayer(routeLayerRef.current);
+      routeLayerRef.current = null;
+    }
+  };
+
+  return { clearMap };
 };
 
 export default useRouteBuilder;

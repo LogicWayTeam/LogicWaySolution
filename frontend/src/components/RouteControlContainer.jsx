@@ -12,15 +12,33 @@ const RouteControlContainer = () => {
   const [destination, setDestination] = useState(null);
 
   const map = useLeafletMap();
+  const routeLayerRef = useRef(null);
 
   // processing map clicks
-  useRouteBuilder(
+  /*useRouteBuilder(
     map,
     ROUTE_ENGINE_URL,
     setOrigin,
     setDestination,
-    () => setShowForm(true)
+    () => setShowForm(true),
+    routeLayerRef
+  );*/
+
+  const { clearMap } = useRouteBuilder(
+    map,
+    ROUTE_ENGINE_URL,
+    setOrigin,
+    setDestination,
+    () => setShowForm(true),
+    routeLayerRef
   );
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    setOrigin(null);
+    setDestination(null);
+    clearMap();
+  };
 
   const handleRouteSubmit = (origin, destination) => {
     // TODO: route building logic
@@ -31,7 +49,7 @@ const RouteControlContainer = () => {
         {showForm ? (
             <RouteInputForm
                 onRouteSubmit={handleRouteSubmit}
-                onClose={() => setShowForm(false)}
+                onClose={handleCloseForm}
                 origin={origin}
                 destination={destination}
                 setOrigin={setOrigin}
