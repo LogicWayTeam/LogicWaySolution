@@ -8,11 +8,10 @@ import 'leaflet-control-geocoder/dist/Control.Geocoder.css';
 import '../App.css';
 import ZoomControl from './ZoomControl';
 import useStops from './useStops';
-import { POZNAN_CENTER, redIcon } from './constants';
-import useRouteBuilder from './useRouteBuilder';
+import { POZNAN_CENTER } from './constants';
 import { ROUTE_ENGINE_URL } from './config';
 import RouteControlContainer from './RouteControlContainer';
-import GeocoderSearchBar from './GeocoderSearchBar';
+import MapOverlay from './MapOverlay';
 
 // --- Map Context ---
 export const MapContext = createContext(null);
@@ -32,21 +31,28 @@ const MapLogic = ({ children }) => {
 
 
 const MapComponent = () => {
+  const [loading, setLoading] = useState(false);
+
   return (
-    <MapContainer
-    center={[52.406376, 16.925167]}
-    zoom={13}
-    zoomControl={false}
-    style={{ height: '100vh', width: '100%' }}>
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
-      />
-      <ZoomControl />
-      <MapLogic>
-        <RouteControlContainer />
-      </MapLogic>
-    </MapContainer>
+    <div style={{ position: 'relative', height: '100vh', width: '100%' }}>
+      <MapContainer
+        center={POZNAN_CENTER}
+        zoom={13}
+        zoomControl={false}
+        style={{ height: '100%', width: '100%' }}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="&copy; OpenStreetMap contributors"
+        />
+        <ZoomControl />
+        <MapLogic>
+          <RouteControlContainer loading={loading} setLoading={setLoading} />
+        </MapLogic>
+      </MapContainer>
+
+      <MapOverlay loading={loading} />
+    </div>
   );
 };
 

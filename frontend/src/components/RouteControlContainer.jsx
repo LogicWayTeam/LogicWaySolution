@@ -5,7 +5,7 @@ import { useLeafletMap } from './MapComponent';
 import useRouteBuilder from './useRouteBuilder';
 import { ROUTE_ENGINE_URL } from './config';
 
-const RouteControlContainer = () => {
+const RouteControlContainer = ({ loading, setLoading }) => {
   const [showForm, setShowForm] = useState(false);
   const [geocoderMarker, setGeocoderMarker] = useState(null);
   const [origin, setOrigin] = useState(null);
@@ -13,16 +13,7 @@ const RouteControlContainer = () => {
 
   const map = useLeafletMap();
   const routeLayerRef = useRef(null);
-
-  // processing map clicks
-  /*useRouteBuilder(
-    map,
-    ROUTE_ENGINE_URL,
-    setOrigin,
-    setDestination,
-    () => setShowForm(true),
-    routeLayerRef
-  );*/
+  const abortControllerRef = useRef(null);
 
   const { clearMap } = useRouteBuilder(
     map,
@@ -30,19 +21,36 @@ const RouteControlContainer = () => {
     setOrigin,
     setDestination,
     () => setShowForm(true),
-    routeLayerRef
+    routeLayerRef,
+    setLoading,
+    abortControllerRef
   );
 
   const handleCloseForm = () => {
     setShowForm(false);
     setOrigin(null);
     setDestination(null);
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
     clearMap();
+    setLoading(false);
   };
 
   const handleRouteSubmit = (origin, destination) => {
     // TODO: route building logic
   };
+
+  // Blocking interaction with the map when loading
+  React.useEffect(() => {
+    if (!map) return;
+
+    if (loading) {
+      map._handlers.forEach(handler => handler.disable());
+    } else {
+      map._handlers.forEach(handler => handler.enable());
+    }
+  }, [loading, map]);
 
   return (
       <>
@@ -80,6 +88,7 @@ const RouteControlContainer = () => {
                 }}
             />
         )}
+
       </>
   );
 };

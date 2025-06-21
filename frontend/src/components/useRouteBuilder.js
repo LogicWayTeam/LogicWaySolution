@@ -6,7 +6,7 @@ import { redIcon } from './constants';
 import { startIcon } from './leafletIcons';
 
 
-const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  openForm, routeLayerRef ) => {
+const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  openForm, routeLayerRef, setLoading, abortControllerRef ) => {
   const lastLMarkerRef = useRef(null);
   const lastRMarkerRef = useRef(null);
 
@@ -22,10 +22,25 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  ope
         setDestination(`${destinationLatLng.lat}, ${destinationLatLng.lng}`);
         openForm();
 
+        setLoading(true);
+
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+        }
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+
         buildRoute(
           map,
           [destinationLatLng, originLatLng],
           routeLayerRef,
+          '#c40035',
+          controller.signal
+        ).finally(() => {
+          setLoading(false);
+          if (abortControllerRef.current === controller) {
+            abortControllerRef.current = null;
+          }}
         );
       }
     };
@@ -69,9 +84,14 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  ope
       map.off('click', handleClick);
       map.off('contextmenu', handleRightClick);
     };
-  }, [map, ROUTE_ENGINE_URL, openForm, setOrigin, setDestination, routeLayerRef]);
+  }, [map, ROUTE_ENGINE_URL, openForm, setOrigin, setDestination, routeLayerRef, setLoading, abortControllerRef]);
 
   const clearMap = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      abortControllerRef.current = null;
+    }
+
     if (lastLMarkerRef.current) {
       map.removeLayer(lastLMarkerRef.current);
       lastLMarkerRef.current = null;

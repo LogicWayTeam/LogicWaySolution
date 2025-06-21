@@ -1,7 +1,7 @@
 import { LOGICWAY_URL, ROUTE_ENGINE_URL } from './config';
 import L from 'leaflet';
 
-export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') => {
+export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035', abortSignal) => {
   if (!stops || stops.length < 2) {
     console.error('At least two stops are required to build a route.');
     return;
@@ -14,7 +14,7 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
   console.log(`Requesting route from: ${url}`);
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, { signal: abortSignal });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
@@ -60,7 +60,7 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
               const points = `${from[0]},${from[1]};${to[0]},${to[1]}`;
               const walkingUrl = `${ROUTE_ENGINE_URL}/route/get_route?profile=pedestrian&locations=${points}`;
               console.log(`Requesting pedestrian route: ${walkingUrl}`);
-              const walkResponse = await fetch(walkingUrl);
+              const walkResponse = await fetch(walkingUrl, { signal: abortSignal });
 
               if (walkResponse.ok) {
                 const walkData = await walkResponse.json();
@@ -75,6 +75,10 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
                 latLngs = [from, to];
               }
             } catch (error) {
+              if (error.name === 'AbortError') {
+                console.log('Pedestrian route request aborted.');
+                return;
+              }
               console.error('Error fetching pedestrian route:', error);
               latLngs = [from, to];
             }
@@ -155,6 +159,10 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035') =
       console.error("Invalid route data", data);
     }
   } catch (error) {
+    if (error.name === 'AbortError') {
+      console.warn('Route request was aborted.');
+      return;
+    }
     console.error('Error fetching route:', error);
   }
 };
