@@ -4,6 +4,7 @@ import { reverseGeocodeLocal } from './geocoding';
 import { buildRoute } from './routing';
 import { redIcon } from './constants';
 import { startIcon } from './leafletIcons';
+import bindPersistentPopup from './bindPersistentPopup';
 
 
 const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setGeocoderMarker, openForm, routeLayerRef, setLoading, abortControllerRef ) => {
@@ -28,7 +29,7 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
             return null;
           });
         }
-        
+
         openForm();
 
         setLoading(true);
@@ -62,10 +63,8 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
         map.removeLayer(lastLMarkerRef.current);
       }
 
-      lastLMarkerRef.current = L.marker(e.latlng, { icon: redIcon })
-        .addTo(map)
-        .bindPopup(address)
-        .openPopup();
+      lastLMarkerRef.current = L.marker(e.latlng, { icon: redIcon }).addTo(map);
+      bindPersistentPopup(lastLMarkerRef.current, address);
 
       tryBuildRoute();
     };
@@ -78,10 +77,8 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
         map.removeLayer(lastRMarkerRef.current);
       }
 
-      lastRMarkerRef.current = L.marker(e.latlng, { icon: startIcon })
-        .addTo(map)
-        .bindPopup(address)
-        .openPopup();
+      lastRMarkerRef.current = L.marker(e.latlng, { icon: startIcon }).addTo(map);
+      bindPersistentPopup(lastRMarkerRef.current, address);
 
       tryBuildRoute();
     };

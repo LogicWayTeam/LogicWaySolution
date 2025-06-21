@@ -7,6 +7,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { redIcon } from './constants';
 import { useLeafletMap } from './MapComponent';
 import { ROUTE_ENGINE_URL } from './config';
+import bindPersistentPopup from './bindPersistentPopup';
 
 // === Styles ===
 const inputStyles = {
@@ -191,10 +192,8 @@ const GeocoderSearchBar = ({ onSearchClick, onRouteClick }) => {
         map.removeLayer(searchMarkerRef.current);
       }
 
-      const marker = L.marker(latlng, { icon: redIcon })
-        .addTo(map)
-        .bindPopup(data.address || text)
-        .openPopup();
+      const marker = L.marker(latlng, { icon: redIcon }).addTo(map);
+      bindPersistentPopup(marker, data.address || text);
 
       searchMarkerRef.current = marker;
       map.setView(latlng, 16);
