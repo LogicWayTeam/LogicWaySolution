@@ -7,7 +7,7 @@ import { ROUTE_ENGINE_URL } from './config';
 
 const RouteControlContainer = ({ loading, setLoading }) => {
   const [showForm, setShowForm] = useState(false);
-  const [geocoderMarker, setGeocoderMarker] = useState(null);
+  const [, setGeocoderMarker] = useState(null);
   const [origin, setOrigin] = useState(null);
   const [destination, setDestination] = useState(null);
 
@@ -20,6 +20,7 @@ const RouteControlContainer = ({ loading, setLoading }) => {
     ROUTE_ENGINE_URL,
     setOrigin,
     setDestination,
+    setGeocoderMarker,
     () => setShowForm(true),
     routeLayerRef,
     setLoading,
@@ -69,22 +70,19 @@ const RouteControlContainer = ({ loading, setLoading }) => {
                   setGeocoderMarker(place);
                 }}
                 onRouteClick={() => {
-                  if (geocoderMarker) {
-                    const value =
-                        geocoderMarker.label ||
-                        `${geocoderMarker.lat}, ${geocoderMarker.lng}`;
-                    setDestination(value);
-
-                    if (geocoderMarker.markerRef) {
-                      geocoderMarker.markerRef.remove();
+                  setGeocoderMarker(prev => {
+                    if (prev?.markerRef) {
+                      prev.markerRef.remove();
                     }
 
-                    setGeocoderMarker(null);
-                  } else {
-                    setDestination('');
-                  }
+                    const value =
+                      prev?.label || (prev ? `${prev.lat}, ${prev.lng}` : '');
 
-                  setShowForm(true);
+                    setDestination(value || '');
+                    setShowForm(true); 
+
+                    return null;
+                  });
                 }}
             />
         )}

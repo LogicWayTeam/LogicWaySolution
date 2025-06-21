@@ -6,7 +6,7 @@ import { redIcon } from './constants';
 import { startIcon } from './leafletIcons';
 
 
-const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  openForm, routeLayerRef, setLoading, abortControllerRef ) => {
+const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setGeocoderMarker, openForm, routeLayerRef, setLoading, abortControllerRef ) => {
   const lastLMarkerRef = useRef(null);
   const lastRMarkerRef = useRef(null);
 
@@ -20,6 +20,15 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  ope
 
         setOrigin(`${originLatLng.lat}, ${originLatLng.lng}`);
         setDestination(`${destinationLatLng.lat}, ${destinationLatLng.lng}`);
+        if (setGeocoderMarker) {
+          setGeocoderMarker(prev => {
+            if (prev?.markerRef) {
+              prev.markerRef.remove();
+            }
+            return null;
+          });
+        }
+        
         openForm();
 
         setLoading(true);
@@ -84,7 +93,7 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination,  ope
       map.off('click', handleClick);
       map.off('contextmenu', handleRightClick);
     };
-  }, [map, ROUTE_ENGINE_URL, openForm, setOrigin, setDestination, routeLayerRef, setLoading, abortControllerRef]);
+  }, [map, ROUTE_ENGINE_URL, openForm, setOrigin, setDestination, setGeocoderMarker, routeLayerRef, setLoading, abortControllerRef]);
 
   const clearMap = () => {
     if (abortControllerRef.current) {

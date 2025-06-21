@@ -11,12 +11,23 @@ const MapOverlay = ({ loading }) => {
         backgroundColor: 'rgba(255, 255, 255, 0.5)',
         zIndex: 500,
         display: 'flex',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        pointerEvents: 'auto', 
+        pointerEvents: 'auto',
+        fontSize: '1.2rem',
+        color: '#333',
       }}
     >
       <div className="spinner" />
+      <div className="loading-text">
+        Calculating the best route for you
+        <span className="dots">
+          <span>.</span>
+          <span>.</span>
+          <span>.</span>
+        </span>
+      </div>
     </div>
   );
 };
