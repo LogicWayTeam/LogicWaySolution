@@ -10,6 +10,8 @@ import bindPersistentPopup from './bindPersistentPopup';
 const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setGeocoderMarker, openForm, routeLayerRef, setLoading, abortControllerRef ) => {
   const lastLMarkerRef = useRef(null);
   const lastRMarkerRef = useRef(null);
+  const originAddressRef = useRef('');
+  const destinationAddressRef = useRef('');
 
   useEffect(() => {
     if (!map) return;
@@ -19,8 +21,9 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
         const originLatLng = lastRMarkerRef.current.getLatLng();
         const destinationLatLng = lastLMarkerRef.current.getLatLng();
 
-        setOrigin(`${originLatLng.lat}, ${originLatLng.lng}`);
-        setDestination(`${destinationLatLng.lat}, ${destinationLatLng.lng}`);
+        setOrigin(originAddressRef.current); 
+        setDestination(destinationAddressRef.current); 
+
         if (setGeocoderMarker) {
           setGeocoderMarker(prev => {
             if (prev?.markerRef) {
@@ -59,6 +62,8 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
       e.originalEvent.preventDefault();
       const address = await reverseGeocodeLocal(e.latlng.lat, e.latlng.lng, ROUTE_ENGINE_URL);
 
+      destinationAddressRef.current = address;
+
       if (lastLMarkerRef.current) {
         map.removeLayer(lastLMarkerRef.current);
       }
@@ -72,6 +77,8 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
     const handleRightClick = async (e) => {
       e.originalEvent.preventDefault();
       const address = await reverseGeocodeLocal(e.latlng.lat, e.latlng.lng, ROUTE_ENGINE_URL);
+
+      originAddressRef.current = address;
 
       if (lastRMarkerRef.current) {
         map.removeLayer(lastRMarkerRef.current);
@@ -112,6 +119,9 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
       map.removeLayer(routeLayerRef.current);
       routeLayerRef.current = null;
     }
+
+    originAddressRef.current = '';
+    destinationAddressRef.current = '';
   };
 
   return { clearMap };
