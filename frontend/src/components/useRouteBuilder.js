@@ -13,81 +13,88 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
   const originAddressRef = useRef('');
   const destinationAddressRef = useRef('');
 
+  const tryBuildRoute = () => {
+    if (lastLMarkerRef.current && lastRMarkerRef.current) {
+      const originLatLng = lastRMarkerRef.current.getLatLng();
+      const destinationLatLng = lastLMarkerRef.current.getLatLng();
+
+      setOrigin(originAddressRef.current); 
+      setDestination(destinationAddressRef.current); 
+
+      if (setGeocoderMarker) {
+        setGeocoderMarker(prev => {
+          if (prev?.markerRef) {
+            prev.markerRef.remove();
+          }
+          return null;
+        });
+      }
+
+      openForm();
+      setLoading(true);
+
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+
+      buildRoute(
+        map,
+        [destinationLatLng, originLatLng],
+        routeLayerRef,
+        '#c40035',
+        controller.signal
+      ).finally(() => {
+        setLoading(false);
+        if (abortControllerRef.current === controller) {
+          abortControllerRef.current = null;
+        }}
+      );
+    }
+  };
+
+  const setOriginPoint = async (lat, lng, address = null) => {
+    const resolvedAddress = address || await reverseGeocodeLocal(lat, lng, ROUTE_ENGINE_URL);
+    originAddressRef.current = resolvedAddress;
+
+    if (lastRMarkerRef.current) {
+      map.removeLayer(lastRMarkerRef.current);
+    }
+
+    const latlng = L.latLng(lat, lng);
+    lastRMarkerRef.current = L.marker(latlng, { icon: startIcon }).addTo(map);
+    bindPersistentPopup(lastRMarkerRef.current, resolvedAddress);
+
+    tryBuildRoute();
+  };
+
+  const setDestinationPoint = async (lat, lng, address = null) => {
+    const resolvedAddress = address || await reverseGeocodeLocal(lat, lng, ROUTE_ENGINE_URL);
+    destinationAddressRef.current = resolvedAddress;
+
+    if (lastLMarkerRef.current) {
+      map.removeLayer(lastLMarkerRef.current);
+    }
+
+    const latlng = L.latLng(lat, lng);
+    lastLMarkerRef.current = L.marker(latlng, { icon: redIcon }).addTo(map);
+    bindPersistentPopup(lastLMarkerRef.current, resolvedAddress);
+
+    tryBuildRoute();
+  };
+
   useEffect(() => {
     if (!map) return;
 
-    const tryBuildRoute = () => {
-      if (lastLMarkerRef.current && lastRMarkerRef.current) {
-        const originLatLng = lastRMarkerRef.current.getLatLng();
-        const destinationLatLng = lastLMarkerRef.current.getLatLng();
-
-        setOrigin(originAddressRef.current); 
-        setDestination(destinationAddressRef.current); 
-
-        if (setGeocoderMarker) {
-          setGeocoderMarker(prev => {
-            if (prev?.markerRef) {
-              prev.markerRef.remove();
-            }
-            return null;
-          });
-        }
-
-        openForm();
-
-        setLoading(true);
-
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
-        const controller = new AbortController();
-        abortControllerRef.current = controller;
-
-        buildRoute(
-          map,
-          [destinationLatLng, originLatLng],
-          routeLayerRef,
-          '#c40035',
-          controller.signal
-        ).finally(() => {
-          setLoading(false);
-          if (abortControllerRef.current === controller) {
-            abortControllerRef.current = null;
-          }}
-        );
-      }
-    };
-
     const handleClick = async (e) => {
       e.originalEvent.preventDefault();
-      const address = await reverseGeocodeLocal(e.latlng.lat, e.latlng.lng, ROUTE_ENGINE_URL);
-
-      destinationAddressRef.current = address;
-
-      if (lastLMarkerRef.current) {
-        map.removeLayer(lastLMarkerRef.current);
-      }
-
-      lastLMarkerRef.current = L.marker(e.latlng, { icon: redIcon }).addTo(map);
-      bindPersistentPopup(lastLMarkerRef.current, address);
-
-      tryBuildRoute();
+      await setDestinationPoint(e.latlng.lat, e.latlng.lng);
     };
 
     const handleRightClick = async (e) => {
       e.originalEvent.preventDefault();
-      const address = await reverseGeocodeLocal(e.latlng.lat, e.latlng.lng, ROUTE_ENGINE_URL);
-
-      originAddressRef.current = address;
-
-      if (lastRMarkerRef.current) {
-        map.removeLayer(lastRMarkerRef.current);
-      }
-
-      lastRMarkerRef.current = L.marker(e.latlng, { icon: startIcon }).addTo(map);
-      bindPersistentPopup(lastRMarkerRef.current, address);
-
-      tryBuildRoute();
+      await setOriginPoint(e.latlng.lat, e.latlng.lng);
     };
 
     map.on('click', handleClick);
@@ -97,7 +104,7 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
       map.off('click', handleClick);
       map.off('contextmenu', handleRightClick);
     };
-  }, [map, ROUTE_ENGINE_URL, openForm, setOrigin, setDestination, setGeocoderMarker, routeLayerRef, setLoading, abortControllerRef]);
+  }, [map, ROUTE_ENGINE_URL]);
 
   const clearMap = () => {
     if (abortControllerRef.current) {
@@ -124,7 +131,7 @@ const useRouteBuilder = ( map, ROUTE_ENGINE_URL, setOrigin, setDestination, setG
     destinationAddressRef.current = '';
   };
 
-  return { clearMap };
+  return { clearMap, setOriginPoint, setDestinationPoint };
 };
 
 export default useRouteBuilder;

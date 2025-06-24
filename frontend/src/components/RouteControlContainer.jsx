@@ -15,7 +15,7 @@ const RouteControlContainer = ({ loading, setLoading }) => {
   const routeLayerRef = useRef(null);
   const abortControllerRef = useRef(null);
 
-  const { clearMap } = useRouteBuilder(
+  const { clearMap, setOriginPoint, setDestinationPoint } = useRouteBuilder(
     map,
     ROUTE_ENGINE_URL,
     setOrigin,
@@ -38,8 +38,34 @@ const RouteControlContainer = ({ loading, setLoading }) => {
     setLoading(false);
   };
 
-  const handleRouteSubmit = (origin, destination) => {
-    // TODO: route building logic
+  const geocodeAddress = async (address) => {
+    const url = `${ROUTE_ENGINE_URL}/geocode/geocode?address=${encodeURIComponent(address)}`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to geocode address: ${address}`);
+    const data = await response.json();
+    if (!data.latitude || !data.longitude) throw new Error(`No coordinates found for: ${address}`);
+    return { lat: data.latitude, lng: data.longitude };
+  };
+
+  const handleRouteSubmit = async (originAddress, destinationAddress) => {
+    try {
+      setLoading(true);
+
+      const [originCoords, destinationCoords] = await Promise.all([
+        geocodeAddress(originAddress),
+        geocodeAddress(destinationAddress),
+      ]);
+
+      await setOriginPoint(originCoords.lat, originCoords.lng, originAddress);
+      await setDestinationPoint(destinationCoords.lat, destinationCoords.lng, destinationAddress);
+
+    } catch (error) {
+      alert('Failed to build route: ' + error.message);
+      console.error(error);
+    } finally {
+      setLoading(false);
+      abortControllerRef.current = null;
+    }
   };
 
   // Blocking interaction with the map when loading

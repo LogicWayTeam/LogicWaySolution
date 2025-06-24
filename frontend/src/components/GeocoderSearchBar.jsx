@@ -99,7 +99,10 @@ const QueryInput = ({ value, onChange, onClear, onKeyDown }) => (
       onKeyDown={onKeyDown}
       sx={{
         flex: 1,
-        input: { color: 'black' },
+        input: { 
+          color: 'black',
+          paddingRight: '38px',
+        },
         '& .MuiInputBase-input::placeholder': {
           color: '#666',
           opacity: 1,

@@ -25,8 +25,8 @@ const useStops = (map) => {
       const { stop_lat, stop_lon, stop_name } = stop;
 
       L.circle([stop_lat, stop_lon], {
-        color: '#931050',
-        fillColor: '#931050',
+        color: '#348000',
+        fillColor: '#348000',
         fillOpacity: 0.5,
         radius: 2,
       }).bindPopup(`<b>${stop_name}</b><br>Lat: ${stop_lat}, Lon: ${stop_lon}`)

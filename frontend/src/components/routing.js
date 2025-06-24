@@ -37,7 +37,7 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035', a
     if (data.segments && Array.isArray(data.segments)) {
       for (const segment of data.segments) {
         let latLngs = [];
-        let segColor = segment.type === "walking" ? "#af399b" : "#FF0000";
+        let segColor = segment.type === "walking" ? "#c40035" : "#ff8a00";
         let lineOptions = {
           color: segColor,
           weight: 5
@@ -110,7 +110,7 @@ export const buildRoute = async (map, stops, routeLayerRef, color = '#c40035', a
             const startPoint = latLngs[0];
             const endPoint = latLngs[1];
             const routeIcon = L.divIcon({
-              html: `<div style="background-color:#FF0000; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:bold;">${segment.route_number}</div>`,
+              html: `<div style="background-color:#ff8a00; color:white; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; font-weight:bold;">${segment.route_number}</div>`,
               className: 'route-number-icon',
               iconSize: [24, 24],
               iconAnchor: [12, 12]
