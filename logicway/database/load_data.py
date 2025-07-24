@@ -164,7 +164,7 @@ def insert_data_bulk(data, model_class, session, message, column_mapping=None, b
                     break
             if csv_col_for_pk:
                 id_attr_name_in_model_for_check = pk_model_attr
-                pk_values_in_df = data[csv_col_for_pk].dropna().astype(str).unique()
+                #pk_values_in_df = data[csv_col_for_pk].dropna().astype(str).unique()
                 existing_ids = get_existing_ids(session, model_class, id_attr_name_in_model_for_check)
 
 

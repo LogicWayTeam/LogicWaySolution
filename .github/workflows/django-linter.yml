@@ -17,23 +17,11 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install ruff
+          pip install ruff==0.0.285
 
       - name: Run linter with auto-fix
         run: |
           ruff check --fix .
-
-      - name: Check remaining issues
-        run: |
-          ruff check . --output-format=github
-        continue-on-error: true
-
-      - name: Create ruff config to ignore common Django patterns
-        run: |
-          cat > pyproject.toml << 'EOF'
-          [tool.ruff]
-          ignore = ["F403", "F405"]
-          EOF
 
       - name: Final lint check
         run: |
