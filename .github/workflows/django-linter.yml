@@ -21,8 +21,4 @@ jobs:
 
       - name: Run linter with auto-fix
         run: |
-          ruff check --fix .
-
-      - name: Final lint check
-        run: |
-          ruff check . --output-format=github
+          ruff check --fix . --format=github
