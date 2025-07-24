@@ -137,7 +137,9 @@ def get_existing_ids(session, model_class, id_column_name):
         inspector = inspect(model_class)
         primary_key_column = inspector.primary_key[0]
         if not primary_key_column.name == id_column_name:
-            print(f"Warning: id_column_name '{id_column_name}' does not match PK '{primary_key_column.name}' for {model_class.__name__}. Ensure this is intended.")
+            print(f"Warning: id_column_name '{id_column_name}' "
+                  f"does not match PK '{primary_key_column.name}' "
+                  f"for {model_class.__name__}. Ensure this is intended.")
 
         existing_ids_query = session.query(getattr(model_class, id_column_name)).all()
         existing_ids = {str(id_tuple[0]) for id_tuple in existing_ids_query if id_tuple[0] is not None}
@@ -147,7 +149,7 @@ def get_existing_ids(session, model_class, id_column_name):
         return set()
 
 
-def insert_data_bulk(data, model_class, session, message, column_mapping=None, batch_size=1000): # Уменьшил batch_size для отладки, можно вернуть 10000
+def insert_data_bulk(data, model_class, session, message, column_mapping=None, batch_size=1000):
     objects = []
     skipped_existing = 0
 
