@@ -78,7 +78,8 @@ def test_get_route_api(client):
                 #rint(f"Skipping route with invalid route_id: {route_id}")
                 continue
 
-            if route_id in ["T2", "122", "162", "196", "216", "220", "226", "484", "490", "494", "561", "826", "881", "911"]:
+            if route_id in ["T2", "122", "162", "196", "216", "220", "226",
+                            "484", "490", "494", "561", "826", "881", "911"]:
                 #print(f"Skipping direction 1 for route {route_id}")
                 direction_to_test = [direction[0]]
             else:

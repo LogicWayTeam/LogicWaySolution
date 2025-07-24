@@ -1,5 +1,8 @@
-from .base import *
+from .base import * # noqa: F401
 
 DEBUG = False
 
-ALLOWED_HOSTS.append('.taile241c6.ts.net')
+if ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.taile241c6.ts.net')
+else:
+    ALLOWED_HOSTS = ['.taile241c6.ts.net']

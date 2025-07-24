@@ -4,7 +4,7 @@ import os
 from django.conf import settings
 
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'logicway.logicway.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'logicway.logicway.settings.dev')
 django.setup()
 
 def test_url_import():
