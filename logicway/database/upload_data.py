@@ -2,6 +2,8 @@ import os
 import requests
 import zipfile
 import git
+import codecs
+import glob
 
 url = "https://www.ztm.poznan.pl/pl/dla-deweloperow/getGTFSFile"
 headers = {
@@ -21,6 +23,95 @@ version_file = os.path.join(base_dir, 'version.txt')
 
 zip_file = os.path.join(base_dir, "ZTMPoznanGTFS.zip")
 data_dir = os.path.join(base_dir, "ZTMPoznanGTFS")
+
+
+#########################################################
+# BOM Character Reducer Functions
+#########################################################
+
+def remove_bom_from_file(file_path):
+    """
+    Remove BOM characters from a file
+    
+    Args:
+        file_path (str): Path to the file
+        
+    Returns:
+        bool: True if BOM was removed, False if no BOM found
+    """
+    try:
+        with open(file_path, 'rb') as file:
+            content = file.read()
+        
+        # Check for different types of BOM
+        bom_removed = False
+        original_encoding = None
+        
+        if content.startswith(codecs.BOM_UTF8):
+            content = content[len(codecs.BOM_UTF8):]
+            original_encoding = 'utf-8'
+            bom_removed = True
+        elif content.startswith(codecs.BOM_UTF16_LE):
+            content = content[len(codecs.BOM_UTF16_LE):]
+            original_encoding = 'utf-16-le'
+            bom_removed = True
+        elif content.startswith(codecs.BOM_UTF16_BE):
+            content = content[len(codecs.BOM_UTF16_BE):]
+            original_encoding = 'utf-16-be'
+            bom_removed = True
+        elif content.startswith(codecs.BOM_UTF32_LE):
+            content = content[len(codecs.BOM_UTF32_LE):]
+            original_encoding = 'utf-32-le'
+            bom_removed = True
+        elif content.startswith(codecs.BOM_UTF32_BE):
+            content = content[len(codecs.BOM_UTF32_BE):]
+            original_encoding = 'utf-32-be'
+            bom_removed = True
+        
+        if bom_removed:
+            # Write back the content without BOM
+            with open(file_path, 'wb') as file:
+                file.write(content)
+            print(f"BOM removed from file: {file_path} (was {original_encoding})")
+        
+        return bom_removed
+        
+    except Exception as e:
+        print(f"Error processing file {file_path}: {e}")
+        return False
+
+
+def process_gtfs_files_for_bom(directory):
+    """
+    Process all GTFS text files in a directory to remove BOM characters
+    
+    Args:
+        directory (str): Directory containing GTFS files
+    """
+    if not os.path.exists(directory):
+        print(f"Directory not found: {directory}")
+        return
+    
+    # GTFS file extensions and patterns
+    gtfs_patterns = [
+        "*.txt",  # Standard GTFS files
+        "*.csv",  # CSV files
+        "*.tsv",  # Tab-separated files
+    ]
+    
+    files_processed = 0
+    bom_files_found = 0
+    
+    print("Processing GTFS files for BOM removal...")
+    
+    for pattern in gtfs_patterns:
+        pattern_path = os.path.join(directory, "**", pattern)
+        for file_path in glob.glob(pattern_path, recursive=True):
+            files_processed += 1
+            if remove_bom_from_file(file_path):
+                bom_files_found += 1
+    
+    print(f"BOM processing completed: {files_processed} files processed, {bom_files_found} files had BOM removed")
 
 
 #########################################################
@@ -102,6 +193,10 @@ def unzip_data():
         with zipfile.ZipFile(zip_file, 'r') as zip_ref:
             zip_ref.extractall(data_dir)
             print(f"Zip-data has been successfully extracted to: {data_dir}")
+        
+        # Process extracted files for BOM removal
+        process_gtfs_files_for_bom(data_dir)
+        
     except Exception as e:
         print(f"Error when unpacking a zip-data: {e}")
 
