@@ -2,6 +2,7 @@ import os
 import requests
 import zipfile
 import git
+import glob
 
 url = "https://www.ztm.poznan.pl/pl/dla-deweloperow/getGTFSFile"
 headers = {
@@ -30,6 +31,62 @@ def is_git_repository(directory):
     return os.path.isdir(os.path.join(directory, '.git'))
 
 
+def remove_bom_from_files():
+    """
+    Remove BOM (Byte Order Mark) from all text files in the extracted data directory.
+    BOM can cause issues when reading CSV files, especially with pandas.
+    """
+    if not os.path.exists(data_dir):
+        print(f"Data directory does not exist: {data_dir}")
+        return
+    
+    # Find all .txt files (GTFS data files)
+    txt_files = glob.glob(os.path.join(data_dir, "*.txt"))
+    
+    bom_removed_count = 0
+    
+    for file_path in txt_files:
+        try:
+            # Read the file in binary mode to detect BOM
+            with open(file_path, 'rb') as f:
+                content = f.read()
+            
+            # Check for UTF-8 BOM (EF BB BF)
+            if content.startswith(b'\xef\xbb\xbf'):
+                # Remove BOM and write back
+                content_without_bom = content[3:]  # Remove first 3 bytes (BOM)
+                with open(file_path, 'wb') as f:
+                    f.write(content_without_bom)
+                bom_removed_count += 1
+                print(f"BOM removed from: {os.path.basename(file_path)}")
+            
+            # Check for UTF-16 LE BOM (FF FE)
+            elif content.startswith(b'\xff\xfe'):
+                # Convert UTF-16 LE to UTF-8 without BOM
+                content_str = content.decode('utf-16-le')
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content_str)
+                bom_removed_count += 1
+                print(f"UTF-16 LE BOM removed and converted to UTF-8: {os.path.basename(file_path)}")
+            
+            # Check for UTF-16 BE BOM (FE FF)
+            elif content.startswith(b'\xfe\xff'):
+                # Convert UTF-16 BE to UTF-8 without BOM
+                content_str = content.decode('utf-16-be')
+                with open(file_path, 'w', encoding='utf-8') as f:
+                    f.write(content_str)
+                bom_removed_count += 1
+                print(f"UTF-16 BE BOM removed and converted to UTF-8: {os.path.basename(file_path)}")
+                
+        except Exception as e:
+            print(f"Error processing file {file_path}: {e}")
+    
+    if bom_removed_count > 0:
+        print(f"BOM removed from {bom_removed_count} file(s)")
+    else:
+        print("No BOM found in any files")
+
+
 #########################################################
 
 
@@ -41,6 +98,7 @@ def update_internal_storage():
 
         download_from_external_storage()
         unzip_data()
+        remove_bom_from_files()  # Add BOM removal after unzipping
         delete_zip()
 
         if repo.is_dirty():
