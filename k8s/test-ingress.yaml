@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: test
+  - host: test-logicway
     http:
       paths:
       - path: /

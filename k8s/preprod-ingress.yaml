@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: tailscale
   rules:
-  - host: preprod
+  - host: preprod-logicway
     http:
       paths:
       - path: /
