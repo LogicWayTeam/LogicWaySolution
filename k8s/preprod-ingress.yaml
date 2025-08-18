@@ -1,13 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: preprod-ingress
+  name: ingress
   namespace: preprod
+  annotations:
+    tailscale.com/hostname: logicway-preprod
 spec:
   ingressClassName: tailscale
   rules:
-  - host: preprod-logicway
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix

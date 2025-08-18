@@ -1,13 +1,14 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: test-ingress
+  name: ingress
   namespace: test
+  annotations:
+    tailscale.com/hostname: logicway-test
 spec:
   ingressClassName: tailscale
   rules:
-  - host: test-logicway
-    http:
+  - http:
       paths:
       - path: /
         pathType: Prefix
