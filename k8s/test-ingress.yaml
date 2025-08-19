@@ -1,14 +1,15 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress
+  name: test-ingress
   namespace: test
   annotations:
-    tailscale.com/hostname: logicway-test
+    traefik.ingress.kubernetes.io/rewrite-target: /$2
 spec:
-  ingressClassName: tailscale
+  ingressClassName: traefik
   rules:
-  - http:
+  - host: "logicway-test.taile241c6.ts.net"
+    http:
       paths:
       - path: /
         pathType: Prefix
