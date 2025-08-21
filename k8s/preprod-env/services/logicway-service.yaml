@@ -4,7 +4,7 @@ metadata:
   name: logicway
   labels:
     app: logicway
-  namespace: ppreprod
+  namespace: preprod
   annotations:
     tailscale.com/expose: "true"
     tailscale.com/hostname: "logicway-preprod"
