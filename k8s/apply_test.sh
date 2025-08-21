@@ -1,17 +1,17 @@
 #!/bin/bash
 
 # --- apply configmaps and secrets ---
-kubectl apply -f test-env/configmap.yaml
-kubectl apply -f base/secret.yaml
+kubectl apply -f test-env/configmap.yaml -n test
+kubectl apply -f test-env/secret.yaml -n test
 
 # --- apply deployments ---
-kubectl apply -f base/frontend/frontend-deployment.yaml
-kubectl apply -f base/logicway/logicway-deployment.yaml
-kubectl apply -f base/postgres/postgres-deployment.yaml
-kubectl apply -f base/route-engine/route-engine-deployment.yaml
+kubectl apply -f test-env/frontend/frontend-deployment.yaml -n test
+kubectl apply -f test-env/logicway/logicway-deployment.yaml -n test
+kubectl apply -f test-env/postgres/postgres-deployment.yaml -n test
+kubectl apply -f test-env/route-engine/route-engine-deployment.yaml -n test
 
 # --- apply services ---
-kubectl apply -f test-env/services/
+kubectl apply -f test-env/services/ -n test
 
 # --- apply jobs ---
-kubectl apply -f base/logicway/job-load-data.yaml
+kubectl apply -f test-env/logicway/job-load-data.yaml -n test
