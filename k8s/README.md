@@ -3,14 +3,10 @@
 ## Setup and Configuration
 
 ### Prerequisites
-- Ensure you have [kubectl](https://kubernetes.io/docs/tasks/tools/) installed and configured.
+- Ensure you have [kubectl](https://kubernetes.io/docs/tasks/tools/) and [k3s](https://docs.k3s.io/installation) installed and configured.
 - Ensure you have [Helm](https://helm.sh/docs/intro/install/) installed.
 
 ### Local Kubernetes Cluster Setup
-#### Install Minikube
-```bash
-minikube start
-```
 
 ## Rolling Update and Rollback
 
@@ -56,34 +52,3 @@ kubectl apply -f k8s/base/morouting/logicway-servicemonitor.yaml -n monitoring
 ```bash
 kubectl --namespace monitoring port-forward svc/prometheus-operated 9090:9090
 ```
-
-## Remote machine deployment
-
-#### Prerequisites
-```bash
-git clone https://github.com/LogicWayTeam/LogicWaySolution.git
-cd LogicWaySolution
-```
-
-#### Apply all manifests
-```bash
-kubectl apply -f k8s/
-```
-
-#### Check the status
-```bash
-kubectl get all
-```
-
----
-
-#### Access from the client machine (SSH tunnel)
-```bash
-ssh -L 8000:192.168.49.2:30001 -L 3000:192.168.49.2:30000 devops@logicway-k8s.taile241c6.ts.net
-```
-
-#### Access from the browser
-Open your browser and go to `http://localhost:3000`. You should see the LogicWay application running.
-
-
-

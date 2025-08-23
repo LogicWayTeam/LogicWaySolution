@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: route-engine
+  labels:
+    app: route-engine
+  namespace: preprod
+spec:
+  selector:
+    app: route-engine
+  ports:
+    - name: http-django-8001
+      port: 80
+      targetPort: 8001
+  type: ClusterIP
