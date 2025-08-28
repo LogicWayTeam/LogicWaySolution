@@ -5,19 +5,21 @@ import os
 import django
 from logicway.database.database import SessionLocal
 from django.test import Client
-from dotenv import load_dotenv
+import envsh
 from logicway.database.models import Stops, Routes
 
-load_dotenv()
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'logicway.logicway.settings')
+envsh.load(search_paths=["../../.."])
+os.environ['DJANGO_SETTINGS_MODULE'] = 'logicway.logicway.settings.dev'
 django.setup()
+
+host = envsh.read_env('LOGICWAY_URL', str)
 
 @pytest.fixture
 def client():
     return Client()
 
 def test_get_stops_api(client):
-    url = '/api/stops/'
+    url = f'{host}/api/stops/'
     response = client.get(url)
 
     assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
@@ -41,14 +43,14 @@ def test_get_stop_api(client):
                     if not part or part == '':
                         #print(f"Skipping part with empty name: {part}")
                         continue
-                    url = f'http://127.0.0.1:8000/api/stop/{part}/'
+                    url = f'{host}/api/stop/{part}/'
                     response = client.get(url)
 
                     #print(url)
                     assert response.status_code == 200, f"Expected status code 200, got {response.status_code}"
                     assert len(response.content) > 0, "Response content is empty"
             else:
-                url = f'http://127.0.0.1:8000/api/stop/{stop_name}/'
+                url = f'{host}/api/stop/{stop_name}/'
                 response = client.get(url)
 
                 #print(url)
@@ -86,7 +88,7 @@ def test_get_route_api(client):
                 direction_to_test = direction
 
             for dir_index in direction_to_test:
-                url = f'http://127.0.0.1:8000/api/route/{route_id}/{dir_index}/'
+                url = f'{host}/api/route/{route_id}/{dir_index}/'
                 #print(f"Requesting URL: {url}")
                 get_route_data(url)
 

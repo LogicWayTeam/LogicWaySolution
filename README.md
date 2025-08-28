@@ -16,21 +16,23 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 ### Create .env with own vars
 
 ```
-# .env
 
-# Django Secret Key
-SECRET_KEY=django-insecure-genkey
-ROUTE_ENGINE_SECRET_KEY=django-insecure-genkey
+export SECRET_KEY="django-insecure-genkey"
+export ROUTE_ENGINE_SECRET_KEY="django-insecure-genkey"
 
-LOGICWAY_URL=http://localhost:8000
-ROUTE_ENGINE_URL=http://localhost:8001
+# Route Engine URL
+export LOGICWAY_URL="http://localhost:8000"
+export ROUTE_ENGINE_URL="http://localhost:8001"
 
 # PostgreSQL Database Settings
-DB_NAME=logic_way_db
-DB_USER=myuser
-DB_PASSWORD=mypassword
-DB_HOST=localhost
-DB_PORT=5432
+export DB_NAME="logic_way_db"
+export DB_USER="myuser"
+export DB_PASSWORD="mypassword"
+export DB_HOST="localhost"
+export DB_PORT="5432"
+
+export REACT_APP_LOGICWAY_URL="$LOGICWAY_URL"
+export REACT_APP_ROUTE_ENGINE_URL="$LOGICWAY_URL/routing/proxy_route_engine"
 ```
 
 ### Development and deployment with Docker Compose

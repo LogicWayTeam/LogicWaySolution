@@ -2,16 +2,16 @@ import pytest
 import datetime
 import os
 import django
-from dotenv import load_dotenv
+import envsh
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from logicway.database.models import Base, Agency, Calendar, Routes, Shapes, Stops, StopTimes, Trips
 from django.conf import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'logicway.logicway.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'logicway.logicway.settings.dev')
 django.setup()
 
-load_dotenv()
+envsh.load(search_paths=["../../.."])
 
 DATABASE_URL = (
     f"postgresql://{settings.DATABASES['default']['USER']}:"
@@ -137,12 +137,47 @@ def test_stop_times_model(db_session):
 
 
 def test_trips_model(db_session):
+    agency = Agency(
+        agency_id="A1",
+        agency_name="Test Agency",
+        agency_url="http://test.com",
+        agency_timezone="UTC"
+    )
+    db_session.add(agency)
+    
+    route = Routes(
+        route_id="R1",
+        agency_id="A1",
+        route_short_name="101",
+        route_long_name="Downtown",
+        route_type=1
+    )
+    db_session.add(route)
+    
+    calendar = Calendar(
+        service_id="S1",
+        monday=True,
+        tuesday=True,
+        wednesday=True,
+        thursday=True,
+        friday=True,
+        saturday=False,
+        sunday=False,
+        start_date="2023-01-01",
+        end_date="2023-12-31"
+    )
+    db_session.add(calendar)
+    db_session.commit()
+    
     trip = Trips(
         trip_id="Trip1",
         route_id="R1",
         service_id="S1",
         trip_headsign="Northbound",
-        direction_id=1
+        direction_id=1,
+        shape_id=1,
+        wheelchair_accessible=1,
+        brigade=1,
     )
     db_session.add(trip)
     db_session.commit()

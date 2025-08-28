@@ -6,14 +6,15 @@ from sqlalchemy.exc import SQLAlchemyError
 from models import Base, Agency, Calendar, Routes, Shapes, Stops, StopTimes, Trips
 from tqdm import tqdm
 from datetime import datetime
-from dotenv import load_dotenv
+import envsh
 
-load_dotenv()
-db_name = os.getenv('DB_NAME')
-db_user = os.getenv('DB_USER')
-db_password = os.getenv('DB_PASSWORD')
-db_host = os.getenv('DB_HOST')
-db_port = os.getenv('DB_PORT')
+envsh.load(search_paths=["../.."])
+
+db_name = envsh.read_env('DB_NAME', str)
+db_user = envsh.read_env('DB_USER', str)
+db_password = envsh.read_env('DB_PASSWORD', str)
+db_host = envsh.read_env('DB_HOST', str)
+db_port = envsh.read_env('DB_PORT', int)
 
 DATABASE_URL = f'postgresql+psycopg2://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}'
 engine = create_engine(DATABASE_URL)

@@ -10,6 +10,7 @@ FROM nginx:alpine
 COPY --from=builder /app/build /usr/share/nginx/html
 
 COPY ./frontend/public/env.js.template /usr/share/nginx/html/env.js
+COPY ./env.sh /app/env.sh
 
 COPY ./frontend/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh

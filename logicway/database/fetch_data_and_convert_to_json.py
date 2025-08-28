@@ -2,16 +2,15 @@ import os
 import json
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import Session
-from dotenv import load_dotenv
+import envsh
 
+envsh.load(search_paths=["../.."])
 
-load_dotenv()
-
-db_name = os.getenv('DB_NAME')
-db_user = os.getenv('DB_USER')
-db_password = os.getenv('DB_PASSWORD')
-db_host = os.getenv('DB_HOST')
-db_port = os.getenv('DB_PORT')
+db_name = envsh.read_env('DB_NAME', str)
+db_user = envsh.read_env('DB_USER', str)
+db_password = envsh.read_env('DB_PASSWORD', str)
+db_host = envsh.read_env('DB_HOST', str)
+db_port = envsh.read_env('DB_PORT', int)
 
 engine = create_engine(f"postgresql://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}")
 

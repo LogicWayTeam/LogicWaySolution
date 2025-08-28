@@ -3,7 +3,7 @@ from django.conf import settings
 from .simple_greedy_search import SimpleGreedySearch
 import requests
 import logging
-from dotenv import load_dotenv
+import envsh
 import os
 
 ALGORITHMS = {
@@ -12,10 +12,10 @@ ALGORITHMS = {
 
 logger = logging.getLogger(__name__)
 
-load_dotenv()
+envsh.load(search_paths=["../.."])
 
 def proxy_route_engine(request: HttpRequest, path: str):
-    PROXY_TARGET_URL = f"{os.getenv('ROUTE_ENGINE_URL')}/{path.lstrip('/')}"
+    PROXY_TARGET_URL = f"{envsh.read_env('ROUTE_ENGINE_URL', str)}/{path.lstrip('/')}"
     params = request.GET.copy()
 
     headers_to_target = {}
@@ -75,7 +75,6 @@ def proxy_route_engine(request: HttpRequest, path: str):
 
 def get_transit_route(request, algorithm):
     try:
-        # Получаем параметры из запроса
         start_lat = float(request.GET.get('start_lat'))
         start_lon = float(request.GET.get('start_lon'))
         end_lat = float(request.GET.get('end_lat'))

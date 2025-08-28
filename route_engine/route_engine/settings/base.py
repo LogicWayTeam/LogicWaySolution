@@ -12,10 +12,10 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
+import envsh
 from urllib.parse import urlparse
 
-load_dotenv()
+envsh.load(search_paths=["../../.."])
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('ROUTE_ENGINE_SECRET_KEY')
+SECRET_KEY = envsh.read_env('ROUTE_ENGINE_SECRET_KEY', str)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

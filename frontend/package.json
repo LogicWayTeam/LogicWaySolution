@@ -22,8 +22,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": ". ../env.sh && react-scripts start",
+    "build": ". ../env.sh && react-scripts build",
     "copy": "copyfiles -u 1 \"build/**/*\" \"../map/static/map/frontend\"",
     "clean": "rimraf ../map/static/map/frontend",
     "build:copy": "npm run build && npm run clean && npm run copy",
