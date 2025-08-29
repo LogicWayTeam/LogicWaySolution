@@ -1,9 +1,9 @@
 from django.shortcuts import render
 import os
-from dotenv import load_dotenv
+import envsh
 
-load_dotenv()
-ROUTE_ENGINE_URL = os.getenv('ROUTE_ENGINE_URL')
+envsh.load(search_paths=["../.."])
+ROUTE_ENGINE_URL = envsh.read_env('ROUTE_ENGINE_URL', str)
 
 def map_with_stops_view(request):
     return render(request, 'map/map.html',{

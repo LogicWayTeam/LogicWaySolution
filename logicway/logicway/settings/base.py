@@ -11,24 +11,23 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import sys
 from pathlib import Path
+import envsh
 import os
-from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv()
+envsh.load(search_paths=["../../.."])
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = envsh.read_env('SECRET_KEY', str)
 
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     '0.0.0.0',
-    'logicway',
-    '192.168.49.2',
+    'logicway'
 ]
 
 # Application definition
@@ -93,11 +92,11 @@ WSGI_APPLICATION = 'logicway.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
+        'NAME': envsh.read_env('DB_NAME', str),
+        'USER': envsh.read_env('DB_USER', str),
+        'PASSWORD': envsh.read_env('DB_PASSWORD', str),
+        'HOST': envsh.read_env('DB_HOST', str),
+        'PORT': envsh.read_env('DB_PORT', str),
     }
 }
 

@@ -2,7 +2,10 @@ from .base import * # noqa: F401
 
 DEBUG = False
 
-if ALLOWED_HOSTS:
-    ALLOWED_HOSTS.append('.taile241c6.ts.net')
-else:
-    ALLOWED_HOSTS = ['.taile241c6.ts.net']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '0.0.0.0',
+    'route-engine',
+    '.taile241c6.ts.net'
+]
