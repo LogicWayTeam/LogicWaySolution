@@ -13,9 +13,10 @@ https://www.jetbrains.com/help/pycharm/poetry.html
 ``` bash
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
-### Create .env with own vars
+### Create .sh with own vars
 
 ```
+# env.sh
 
 export SECRET_KEY="django-insecure-genkey"
 export ROUTE_ENGINE_SECRET_KEY="django-insecure-genkey"
