@@ -18,7 +18,7 @@ run-logicway:
 run-route-engine:
 	poetry run python $(ROUTE_ENGINE_DIR)/manage.py runserver 8001
 
-run-frontend:
+run-frontend: configure
 	cd $(FRONTEND_DIR) && npm start
 
 tests:
