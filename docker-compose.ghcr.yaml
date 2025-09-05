@@ -21,9 +21,8 @@ services:
   route-engine:
     restart: always
     image: ghcr.io/logicwayteam/route-engine:latest
-    env_file:
-      - .env
     environment:
+      ROUTE_ENGINE_SECRET_KEY: ${ROUTE_ENGINE_SECRET_KEY}
       DJANGO_SETTINGS_MODULE: route_engine.settings.prod
     ports:
       - "8001:8001"
@@ -33,14 +32,13 @@ services:
   logicway:
     image: ghcr.io/logicwayteam/logicway:latest
     restart: always
-    env_file:
-      - .env
     ports:
       - "8000:8000"
     depends_on:
       - db
       - route-engine
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       DJANGO_SETTINGS_MODULE: logicway.settings.prod
       ROUTE_ENGINE_URL: http://route-engine:8001
       DB_NAME: ${DB_NAME:-logicway}
