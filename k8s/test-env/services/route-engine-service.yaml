@@ -5,6 +5,9 @@ metadata:
   labels:
     app: route-engine
   namespace: test
+  annotations:
+    tailscale.com/expose: "true"
+    tailscale.com/hostname: "route-engine-test"
 spec:
   selector:
     app: route-engine

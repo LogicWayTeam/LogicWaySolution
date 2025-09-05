@@ -21,9 +21,8 @@ services:
     build:
       context: .
       dockerfile: route_engine/Dockerfile
-    env_file:
-      - .env
     environment:
+      ROUTE_ENGINE_SECRET_KEY: ${ROUTE_ENGINE_SECRET_KEY}
       DJANGO_SETTINGS_MODULE: route_engine.settings.dev
     ports:
       - "8001:8001"
@@ -34,14 +33,13 @@ services:
     build:
       context: .
       dockerfile: logicway/Dockerfile
-    env_file:
-      - .env
     ports:
       - "8000:8000"
     depends_on:
       - db
       - route-engine
     environment:
+      SECRET_KEY: ${SECRET_KEY}
       DJANGO_SETTINGS_MODULE: logicway.settings.dev
       ROUTE_ENGINE_URL: http://route-engine:8001
       DB_NAME: ${DB_NAME:-logicway}

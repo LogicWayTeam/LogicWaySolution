@@ -5,89 +5,97 @@ https://www.jetbrains.com/help/pycharm/poetry.html
 ### Install Dependencies
 
 - To install all dependencies: `poetry install`
-- Install only for logicway service: `poetry install --with logicway`
-- Install only for route_engine service: `poetry install --with route_engine`
 
-#### To create new SECRET_KEY for Django
+### Poetry Dependency Groups
 
-``` bash
-python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-```
-### Create .sh with own vars
+This project uses Poetry dependency groups to organize different types of dependencies:
 
-```
-# env.sh
+- **Main dependencies**: Core packages needed for all services (Django, envsh, etc.)
+- **logicway**: Dependencies specific to LogicWay service (SQLAlchemy, Selenium, pandas, etc.)
+- **route_engine**: Dependencies for Route Engine service (routingpy, geopy)
+- **dev**: Development and testing dependencies (pytest, ruff linter, etc.)
 
-export SECRET_KEY="django-insecure-genkey"
-export ROUTE_ENGINE_SECRET_KEY="django-insecure-genkey"
+Install specific groups:
+```bash
+# Install all dependencies (default)
+poetry install
 
-# Route Engine URL
-export LOGICWAY_URL="http://localhost:8000"
-export ROUTE_ENGINE_URL="http://localhost:8001"
+# Install main + specific groups
+poetry install --with=logicway,route_engine
 
-# PostgreSQL Database Settings
-export DB_NAME="logic_way_db"
-export DB_USER="myuser"
-export DB_PASSWORD="mypassword"
-export DB_HOST="localhost"
-export DB_PORT="5432"
-
-export REACT_APP_LOGICWAY_URL="$LOGICWAY_URL"
-export REACT_APP_ROUTE_ENGINE_URL="$LOGICWAY_URL/routing/proxy_route_engine"
+# Install only dev dependencies
+poetry install --only=dev
 ```
 
-### Development and deployment with Docker Compose
+### Make Commands
 
-#### Development compose commands
+This project uses a Makefile for common development and deployment tasks:
 
-- Build and run the containers in detached mode: `docker compose -f docker-compose.dev.yaml up -d`
-- Just stop the containers: `docker compose -f docker-compose.dev.yaml stop`
-- Stop and remove the containers: `docker compose -f docker-compose.dev.yaml down --remove-orphans`
-- If you are deleting all containers and images, you can use the following command:
-  `
-  docker compose -f docker-compose.dev.yaml down --rmi all --volumes --remove-orphans
-  `
+#### Development Commands
+- `make run-logicway` - Run LogicWay backend server on port 8000
+- `make run-route-engine` - Run Route Engine backend server on port 8001  
+- `make run-frontend` - Run React frontend development server
+- `make tests` - Run pytest tests for backend services
+- `make create-key` - Generate a new Django SECRET_KEY for env.sh
 
-#### Production compose commands
+#### Docker Development
+- `make start-docker-dev` - Start all services with docker-compose (development)
+- `make stop-docker-dev` - Stop all Docker services (development)
+- `make rm-docker-dev` - Remove Docker containers (development)
+- `make rm-docker-all-dev` - Remove containers, images, volumes (development)
+- `make run-docker-jobs-dev` - Run data upload/load jobs in Docker (development)
 
-- Build and run the containers in detached mode: `docker compose -f docker-compose.prod.yaml up -d`
-- Just stop the containers: `docker compose -f docker-compose.prod.yaml stop`
-- Stop and remove the containers: `docker compose -f docker-compose.prod.yaml down --remove-orphans`
-- If you are deleting all containers and images, you can use the following command:
-`
-docker compose -f docker-compose.prod.yaml down --rmi all --volumes --remove-orphans
-`
+#### Docker Production
+- `make start-docker-prod` - Start all services (production)
+- `make stop-docker-prod` - Stop all services (production)
+- `make rm-docker-prod` - Remove containers (production)
+- `make rm-docker-all-prod` - Remove containers, images, volumes (production)
+- `make run-docker-jobs-prod` - Run data jobs (production)
 
-#### Production compose (images form GitHub Container Registry)
+#### Docker GitHub Container Registry
+- `make start-docker-ghcr` - Start services using GHCR images
+- `make stop-docker-ghcr` - Stop GHCR services
+- `make rm-docker-ghcr` - Remove GHCR containers
+- `make rm-docker-all-ghcr` - Remove GHCR containers, images, volumes
+- `make run-docker-jobs-ghcr` - Run data jobs with GHCR images
 
-- Build and run the containers in detached mode: `docker compose -f docker-compose.ghcr.yaml up -d`
-- Just stop the containers: `docker compose -f docker-compose.ghcr.yaml stop`
-- Stop and remove the containers: `docker compose -f docker-compose.ghcr.yaml down --remove-orphans`
-- If you are deleting all containers and images, you can use the following command:
-  `
-  docker compose -f docker-compose.ghcr.yaml down --rmi all --volumes --remove-orphans
-  `
+#### Other Commands
+- `make help` - Show all available commands with descriptions
+- `make configure` - Load environment variables from env.sh
 
-#### Jobs
+**Note**: Most Docker commands automatically run `make configure` to load env.sh variables.
 
-Important: Ensure the database is properly initialized.
-- Run loading data job: 
-`
-docker compose -f docker-compose.dev.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
-`
-- if production:
-`
-docker compose -f docker-compose.prod.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
-`
-- if production with GitHub Container Registry:
-`
-docker compose -f docker-compose.ghcr.yaml run logicway sh -c "INTERNAL=1 poetry run python database/upload_data.py && poetry run python database/load_data.py"
-`
+### Quick Start
 
-### Production preparation and Deployment
+1. **Setup environment**:
+   ```bash
+   # Create your env.sh file (see template below)
+   cp env.sh.example env.sh
+   # Edit env.sh with your settings
+   
+   # Install dependencies
+   poetry install
+   ```
 
-Generate requirements.txt files for each service:
-``` bash
-poetry export --with logicway --without-hashes -f requirements.txt -o logicway/requirements.txt
-poetry export --with route_engine --without-hashes -f requirements.txt -o route_engine/requirements.txt
-```
+2. **Development (local)**:
+   ```bash
+   # Start all services locally
+   make run-logicway      # Terminal 1
+   make run-route-engine  # Terminal 2  
+   make run-frontend      # Terminal 3
+   
+   # Or run tests
+   make tests
+   ```
+
+3. **Development (Docker)**:
+   ```bash
+   # Start all services in Docker
+   make start-docker-dev
+   
+   # Run data import jobs
+   make run-docker-jobs-dev
+   
+   # Stop services
+   make stop-docker-dev
+   ```

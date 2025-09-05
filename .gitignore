@@ -9,6 +9,7 @@ __pycache__/
 venv/
 .env
 *.env
+*env.sh
 
 # Django specific
 db.sqlite3
@@ -17,10 +18,9 @@ db.sqlite3
 *.bak
 *.dump
 
-# Migrations (опционально, если не хочешь версионировать)
+# Migrations
 **/migrations/__pycache__/
 **/migrations/*.pyc
-# **/migrations/ можно добавить, если генерируешь их автоматически
 
 # IDE
 .idea/
@@ -33,7 +33,7 @@ htmlcov/
 pytest_cache/
 .cache/
 
-# Static/media files (если генерируются)
+# Static/media files
 staticfiles/
 media/
 static/
