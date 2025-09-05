@@ -3,9 +3,10 @@ LOGICWAY_DIR = logicway
 ROUTE_ENGINE_DIR = route_engine
 FRONTEND_DIR = frontend
 
+ENVSH ?= env.sh
 
 configure:
-	. ./env.sh
+	. ./${ENVSH}
 
 #====================================================================
 # ==== DEVELOPMENT ====
@@ -120,6 +121,8 @@ help:
 	@echo "  run-docker-jobs-ghcr   - Run data upload and load data jobs in Docker (GitHub Container Registry)"
 	@echo "========== INTERNAL =========="
 	@echo "  configure              - Configure environment variables from env.sh"
+	@echo "========== VARIABLES =========="
+	@echo "  ENVSH=my_env.sh		- Specify the environment file to source (default: env.sh)"
 
 .PHONY: run-logicway run-route-engine run-frontend \
 	run-tests configure create-key \
